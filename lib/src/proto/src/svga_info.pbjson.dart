@@ -19,11 +19,12 @@ const SVGALoadInfo$json = const {
     const {'1': 'widgetId', '3': 5, '4': 1, '5': 3, '10': 'widgetId'},
     const {'1': 'scaleType', '3': 6, '4': 1, '5': 5, '10': 'scaleType'},
     const {'1': 'mute', '3': 7, '4': 1, '5': 8, '10': 'mute'},
+    const {'1': 'loopCount', '3': 8, '4': 1, '5': 5, '10': 'loopCount'},
   ],
 };
 
 /// Descriptor for `SVGALoadInfo`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List sVGALoadInfoDescriptor = $convert.base64Decode('CgxTVkdBTG9hZEluZm8SGgoIYXNzZXRVcmwYASABKAlSCGFzc2V0VXJsEhwKCXJlbW90ZVVybBgCIAEoCVIJcmVtb3RlVXJsEhQKBXdpZHRoGAMgASgBUgV3aWR0aBIWCgZoZWlnaHQYBCABKAFSBmhlaWdodBIaCgh3aWRnZXRJZBgFIAEoA1IId2lkZ2V0SWQSHAoJc2NhbGVUeXBlGAYgASgFUglzY2FsZVR5cGUSEgoEbXV0ZRgHIAEoCFIEbXV0ZQ==');
+final $typed_data.Uint8List sVGALoadInfoDescriptor = $convert.base64Decode('CgxTVkdBTG9hZEluZm8SGgoIYXNzZXRVcmwYASABKAlSCGFzc2V0VXJsEhwKCXJlbW90ZVVybBgCIAEoCVIJcmVtb3RlVXJsEhQKBXdpZHRoGAMgASgBUgV3aWR0aBIWCgZoZWlnaHQYBCABKAFSBmhlaWdodBIaCgh3aWRnZXRJZBgFIAEoA1IId2lkZ2V0SWQSHAoJc2NhbGVUeXBlGAYgASgFUglzY2FsZVR5cGUSEgoEbXV0ZRgHIAEoCFIEbXV0ZRIcCglsb29wQ291bnQYCCABKAVSCWxvb3BDb3VudA==');
 @$core.Deprecated('Use resultInfoDescriptor instead')
 const ResultInfo$json = const {
   '1': 'ResultInfo',

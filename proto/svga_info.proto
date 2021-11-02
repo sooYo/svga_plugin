@@ -19,6 +19,8 @@ message SVGALoadInfo {
   int32 scaleType = 6;
 
   bool mute = 7;
+
+  int32 loopCount = 8;
 }
 
 message ResultInfo {

@@ -53,10 +53,12 @@ static GPBFileDescriptor *SvgaInfoRoot_FileDescriptor(void) {
 @dynamic widgetId;
 @dynamic scaleType;
 @dynamic mute;
+@dynamic loopCount;
 
 typedef struct SVGALoadInfo__storage_ {
   uint32_t _has_storage_[1];
   int32_t scaleType;
+  int32_t loopCount;
   NSString *assetURL;
   NSString *remoteURL;
   double width;
@@ -133,6 +135,15 @@ typedef struct SVGALoadInfo__storage_ {
         .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldClearHasIvarOnZero),
         .dataType = GPBDataTypeBool,
       },
+      {
+        .name = "loopCount",
+        .dataTypeSpecific.clazz = Nil,
+        .number = SVGALoadInfo_FieldNumber_LoopCount,
+        .hasIndex = 8,
+        .offset = (uint32_t)offsetof(SVGALoadInfo__storage_, loopCount),
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldTextFormatNameCustom | GPBFieldClearHasIvarOnZero),
+        .dataType = GPBDataTypeInt32,
+      },
     };
     GPBDescriptor *localDescriptor =
         [GPBDescriptor allocDescriptorForClass:[SVGALoadInfo class]
@@ -144,7 +155,7 @@ typedef struct SVGALoadInfo__storage_ {
                                          flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
 #if !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     static const char *extraTextFormatInfo =
-        "\004\001\006!!\000\002\007!!\000\005\010\000\006\t\000";
+        "\005\001\006!!\000\002\007!!\000\005\010\000\006\t\000\010\t\000";
     [localDescriptor setupExtraTextInfo:extraTextFormatInfo];
 #endif  // !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     #if defined(DEBUG) && DEBUG

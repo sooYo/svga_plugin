@@ -19,6 +19,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'widgetId', protoName: 'widgetId')
     ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'scaleType', $pb.PbFieldType.O3, protoName: 'scaleType')
     ..aOB(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mute')
+    ..a<$core.int>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'loopCount', $pb.PbFieldType.O3, protoName: 'loopCount')
     ..hasRequiredFields = false
   ;
 
@@ -31,6 +32,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     $fixnum.Int64? widgetId,
     $core.int? scaleType,
     $core.bool? mute,
+    $core.int? loopCount,
   }) {
     final _result = create();
     if (assetUrl != null) {
@@ -53,6 +55,9 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     }
     if (mute != null) {
       _result.mute = mute;
+    }
+    if (loopCount != null) {
+      _result.loopCount = loopCount;
     }
     return _result;
   }
@@ -139,6 +144,15 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
   $core.bool hasMute() => $_has(6);
   @$pb.TagNumber(7)
   void clearMute() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.int get loopCount => $_getIZ(7);
+  @$pb.TagNumber(8)
+  set loopCount($core.int v) { $_setSignedInt32(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasLoopCount() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearLoopCount() => clearField(8);
 }
 
 class ResultInfo extends $pb.GeneratedMessage {

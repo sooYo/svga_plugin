@@ -6,3 +6,5 @@ export "src/svga_info.pb.dart";
 export "src/svga_info.pbenum.dart";
 export "src/svga_info.pbjson.dart";
 export "src/svga_info.pbserver.dart";
+
+export "extension/extension.dart";

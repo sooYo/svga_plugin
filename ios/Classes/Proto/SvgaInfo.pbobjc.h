@@ -54,6 +54,7 @@ typedef GPB_ENUM(SVGALoadInfo_FieldNumber) {
   SVGALoadInfo_FieldNumber_WidgetId = 5,
   SVGALoadInfo_FieldNumber_ScaleType = 6,
   SVGALoadInfo_FieldNumber_Mute = 7,
+  SVGALoadInfo_FieldNumber_LoopCount = 8,
 };
 
 GPB_FINAL @interface SVGALoadInfo : GPBMessage
@@ -78,6 +79,8 @@ GPB_FINAL @interface SVGALoadInfo : GPBMessage
 @property(nonatomic, readwrite) int32_t scaleType;
 
 @property(nonatomic, readwrite) BOOL mute;
+
+@property(nonatomic, readwrite) int32_t loopCount;
 
 @end
 

@@ -96,6 +96,12 @@ public final class SvgaInfo {
      * @return The mute.
      */
     boolean getMute();
+
+    /**
+     * <code>int32 loopCount = 8;</code>
+     * @return The loopCount.
+     */
+    int getLoopCount();
   }
   /**
    * Protobuf type {@code SVGALoadInfo}
@@ -179,6 +185,11 @@ public final class SvgaInfo {
             case 56: {
 
               mute_ = input.readBool();
+              break;
+            }
+            case 64: {
+
+              loopCount_ = input.readInt32();
               break;
             }
             default: {
@@ -369,6 +380,17 @@ public final class SvgaInfo {
       return mute_;
     }
 
+    public static final int LOOPCOUNT_FIELD_NUMBER = 8;
+    private int loopCount_;
+    /**
+     * <code>int32 loopCount = 8;</code>
+     * @return The loopCount.
+     */
+    @java.lang.Override
+    public int getLoopCount() {
+      return loopCount_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -403,6 +425,9 @@ public final class SvgaInfo {
       }
       if (mute_ != false) {
         output.writeBool(7, mute_);
+      }
+      if (loopCount_ != 0) {
+        output.writeInt32(8, loopCount_);
       }
       unknownFields.writeTo(output);
     }
@@ -439,6 +464,10 @@ public final class SvgaInfo {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(7, mute_);
       }
+      if (loopCount_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(8, loopCount_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -470,6 +499,8 @@ public final class SvgaInfo {
           != other.getScaleType()) return false;
       if (getMute()
           != other.getMute()) return false;
+      if (getLoopCount()
+          != other.getLoopCount()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -499,6 +530,8 @@ public final class SvgaInfo {
       hash = (37 * hash) + MUTE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getMute());
+      hash = (37 * hash) + LOOPCOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + getLoopCount();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -646,6 +679,8 @@ public final class SvgaInfo {
 
         mute_ = false;
 
+        loopCount_ = 0;
+
         return this;
       }
 
@@ -679,6 +714,7 @@ public final class SvgaInfo {
         result.widgetId_ = widgetId_;
         result.scaleType_ = scaleType_;
         result.mute_ = mute_;
+        result.loopCount_ = loopCount_;
         onBuilt();
         return result;
       }
@@ -749,6 +785,9 @@ public final class SvgaInfo {
         }
         if (other.getMute() != false) {
           setMute(other.getMute());
+        }
+        if (other.getLoopCount() != 0) {
+          setLoopCount(other.getLoopCount());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1149,6 +1188,37 @@ public final class SvgaInfo {
       public Builder clearMute() {
         
         mute_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int loopCount_ ;
+      /**
+       * <code>int32 loopCount = 8;</code>
+       * @return The loopCount.
+       */
+      @java.lang.Override
+      public int getLoopCount() {
+        return loopCount_;
+      }
+      /**
+       * <code>int32 loopCount = 8;</code>
+       * @param value The loopCount to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLoopCount(int value) {
+        
+        loopCount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 loopCount = 8;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearLoopCount() {
+        
+        loopCount_ = 0;
         onChanged();
         return this;
       }
@@ -1963,13 +2033,14 @@ public final class SvgaInfo {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\017svga_info.proto\"\205\001\n\014SVGALoadInfo\022\020\n\010as" +
+      "\n\017svga_info.proto\"\230\001\n\014SVGALoadInfo\022\020\n\010as" +
       "setUrl\030\001 \001(\t\022\021\n\tremoteUrl\030\002 \001(\t\022\r\n\005width" +
       "\030\003 \001(\001\022\016\n\006height\030\004 \001(\001\022\020\n\010widgetId\030\005 \001(\003" +
-      "\022\021\n\tscaleType\030\006 \001(\005\022\014\n\004mute\030\007 \001(\010\">\n\nRes" +
-      "ultInfo\022\014\n\004code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\022\021" +
-      "\n\ttextureId\030\003 \001(\003B#\n!com.svga.plugin.svg" +
-      "a_plugin.protob\006proto3"
+      "\022\021\n\tscaleType\030\006 \001(\005\022\014\n\004mute\030\007 \001(\010\022\021\n\tloo" +
+      "pCount\030\010 \001(\005\">\n\nResultInfo\022\014\n\004code\030\001 \001(\005" +
+      "\022\017\n\007message\030\002 \001(\t\022\021\n\ttextureId\030\003 \001(\003B#\n!" +
+      "com.svga.plugin.svga_plugin.protob\006proto" +
+      "3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1980,7 +2051,7 @@ public final class SvgaInfo {
     internal_static_SVGALoadInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SVGALoadInfo_descriptor,
-        new java.lang.String[] { "AssetUrl", "RemoteUrl", "Width", "Height", "WidgetId", "ScaleType", "Mute", });
+        new java.lang.String[] { "AssetUrl", "RemoteUrl", "Width", "Height", "WidgetId", "ScaleType", "Mute", "LoopCount", });
     internal_static_ResultInfo_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_ResultInfo_fieldAccessorTable = new
