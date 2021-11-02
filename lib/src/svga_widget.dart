@@ -1,12 +1,17 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'constants/type_alias.dart';
+import 'plugin.dart';
+import 'proto/pb_header.dart';
 
 class SVGAWidget extends StatefulWidget {
-  SVGAWidget.asset(
+  const SVGAWidget.asset(
     String assetPath, {
     this.width,
     this.height,
     this.loadingWidget,
     this.errorWidget,
+    this.onComplete,
     this.mute = false,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
@@ -15,12 +20,13 @@ class SVGAWidget extends StatefulWidget {
   })  : _remoted = false,
         _source = assetPath;
 
-  SVGAWidget.network(
+  const SVGAWidget.network(
     String url, {
     this.width,
     this.height,
     this.loadingWidget,
     this.errorWidget,
+    this.onComplete,
     this.mute = false,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
@@ -74,6 +80,9 @@ class SVGAWidget extends StatefulWidget {
   /// has no effect if [loadingWidget] is not null
   final double indicatorRadius;
 
+  /// Load callback
+  final SVGALoadCompletion? onComplete;
+
   /// For different parser entries
   final String _source;
   final bool _remoted;
@@ -83,8 +92,29 @@ class SVGAWidget extends StatefulWidget {
 }
 
 class _SVGAState extends State<SVGAWidget> {
+  int _id = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _id = SvgaPlugin.generateID();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container();
+  }
+
+  Future<ResultInfo> _loadSVGA(double width, double height) async {
+    final result = await SvgaPlugin.load(
+      _id,
+      source: widget._source,
+      width: width,
+      height: height,
+      mute: widget.mute,
+    );
+
+    widget.onComplete?.call(result);
+    return result;
   }
 }
