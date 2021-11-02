@@ -26,4 +26,7 @@ enum class StatusCodes(val code: Int) {
     // SVGA parser failed to handle the source
     SVGA_PARSE_ERROR(100006),
     
+    // Plugin does not provide a legal widget id
+    ILLEGAL_WIDGET_ID(100007),
+    
 }

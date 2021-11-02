@@ -24,4 +24,7 @@ class StatusCodes {
   // SVGA parser failed to handle the source
   static const svgaParseError = 100006;
   
+  // Plugin does not provide a legal widget id
+  static const illegalWidgetId = 100007;
+  
 }

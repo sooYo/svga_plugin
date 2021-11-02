@@ -1,6 +1,7 @@
 package com.svga.plugin.svga_plugin
 
 import android.util.Log
+import android.util.LongSparseArray
 import androidx.annotation.NonNull
 import com.svga.plugin.svga_plugin.constants.Methods
 import com.svga.plugin.svga_plugin.flutter.FlutterLoadModel
@@ -26,13 +27,13 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
     private lateinit var channel: MethodChannel
     private lateinit var parser: SVGAParser
 
-    private val modelMap = hashMapOf<Int, FlutterLoadModel>()
+    private val modelMap = LongSparseArray<FlutterLoadModel>()
 
-    override val widgetIdList = mutableListOf<Int>()
+    override val widgetIdList = mutableListOf<Long>()
     override lateinit var registry: TextureRegistry
 
     override fun onModelGenerated(model: FlutterLoadModel) {
-        modelMap[model.widgetId] = model
+        modelMap.put(model.widgetId, model)
     }
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -102,11 +103,11 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
     }
 
     private fun releaseSVGA(call: MethodCall, result: Result) {
-        if (!checkArgumentsType<Int>(call, result)) {
+        if (!checkArgumentsType<Long>(call, result)) {
             return
         }
 
-        val widgetId = call.arguments as Int
+        val widgetId = call.arguments as Long
 
         modelMap[widgetId]?.release()
         modelMap.remove(widgetId)
@@ -116,11 +117,11 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
     }
 
     private fun resumeSVGA(call: MethodCall, result: Result) {
-        if (!checkArgumentsType<Int>(call, result)) {
+        if (!checkArgumentsType<Long>(call, result)) {
             return
         }
 
-        modelMap[call.arguments as Int]?.drawer?.resume()
+        modelMap[call.arguments as Long]?.drawer?.resume()
         result.success(ResultUtil.ok)
     }
 
@@ -129,7 +130,7 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
             return
         }
 
-        modelMap[call.arguments as Int]?.drawer?.pause()
+        modelMap[call.arguments as Long]?.drawer?.pause()
         result.success(ResultUtil.ok)
     }
 

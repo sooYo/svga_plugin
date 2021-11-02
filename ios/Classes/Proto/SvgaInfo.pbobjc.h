@@ -72,7 +72,7 @@ GPB_FINAL @interface SVGALoadInfo : GPBMessage
  * Created on Flutter side and should be unique accross all
  * SVGA widgets, used to handle quick-dispose occasion
  **/
-@property(nonatomic, readwrite) int32_t widgetId;
+@property(nonatomic, readwrite) int64_t widgetId;
 
 /** Alias to andriod's ImageView.ScaleType */
 @property(nonatomic, readwrite) int32_t scaleType;

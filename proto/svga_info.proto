@@ -13,7 +13,7 @@ message SVGALoadInfo {
 
   // Created on Flutter side and should be unique accross all
   // SVGA widgets, used to handle quick-dispose occasion
-  int32 widgetId = 5;
+  int64 widgetId = 5;
 
   // Alias to andriod's ImageView.ScaleType
   int32 scaleType = 6;

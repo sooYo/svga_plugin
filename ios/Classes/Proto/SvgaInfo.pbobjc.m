@@ -56,12 +56,12 @@ static GPBFileDescriptor *SvgaInfoRoot_FileDescriptor(void) {
 
 typedef struct SVGALoadInfo__storage_ {
   uint32_t _has_storage_[1];
-  int32_t widgetId;
   int32_t scaleType;
   NSString *assetURL;
   NSString *remoteURL;
   double width;
   double height;
+  int64_t widgetId;
 } SVGALoadInfo__storage_;
 
 // This method is threadsafe because it is initially called
@@ -113,7 +113,7 @@ typedef struct SVGALoadInfo__storage_ {
         .hasIndex = 4,
         .offset = (uint32_t)offsetof(SVGALoadInfo__storage_, widgetId),
         .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldTextFormatNameCustom | GPBFieldClearHasIvarOnZero),
-        .dataType = GPBDataTypeInt32,
+        .dataType = GPBDataTypeInt64,
       },
       {
         .name = "scaleType",

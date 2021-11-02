@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 METHOD_DEFINES='../material/method_list'
 
 DART_SOURCE_DIR='../lib/src/constants/'

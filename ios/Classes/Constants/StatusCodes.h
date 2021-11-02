@@ -26,4 +26,7 @@ typedef NS_ENUM(NSInteger, StatusCodes) {
     // SVGA parser failed to handle the source
     svgaParseError = 100006,
     
+    // Plugin does not provide a legal widget id
+    illegalWidgetId = 100007,
+    
 };

@@ -76,10 +76,10 @@ public final class SvgaInfo {
      * SVGA widgets, used to handle quick-dispose occasion
      * </pre>
      *
-     * <code>int32 widgetId = 5;</code>
+     * <code>int64 widgetId = 5;</code>
      * @return The widgetId.
      */
-    int getWidgetId();
+    long getWidgetId();
 
     /**
      * <pre>
@@ -168,7 +168,7 @@ public final class SvgaInfo {
             }
             case 40: {
 
-              widgetId_ = input.readInt32();
+              widgetId_ = input.readInt64();
               break;
             }
             case 48: {
@@ -328,18 +328,18 @@ public final class SvgaInfo {
     }
 
     public static final int WIDGETID_FIELD_NUMBER = 5;
-    private int widgetId_;
+    private long widgetId_;
     /**
      * <pre>
      * Created on Flutter side and should be unique accross all
      * SVGA widgets, used to handle quick-dispose occasion
      * </pre>
      *
-     * <code>int32 widgetId = 5;</code>
+     * <code>int64 widgetId = 5;</code>
      * @return The widgetId.
      */
     @java.lang.Override
-    public int getWidgetId() {
+    public long getWidgetId() {
       return widgetId_;
     }
 
@@ -395,8 +395,8 @@ public final class SvgaInfo {
       if (height_ != 0D) {
         output.writeDouble(4, height_);
       }
-      if (widgetId_ != 0) {
-        output.writeInt32(5, widgetId_);
+      if (widgetId_ != 0L) {
+        output.writeInt64(5, widgetId_);
       }
       if (scaleType_ != 0) {
         output.writeInt32(6, scaleType_);
@@ -427,9 +427,9 @@ public final class SvgaInfo {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(4, height_);
       }
-      if (widgetId_ != 0) {
+      if (widgetId_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, widgetId_);
+          .computeInt64Size(5, widgetId_);
       }
       if (scaleType_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -492,7 +492,8 @@ public final class SvgaInfo {
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getHeight()));
       hash = (37 * hash) + WIDGETID_FIELD_NUMBER;
-      hash = (53 * hash) + getWidgetId();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getWidgetId());
       hash = (37 * hash) + SCALETYPE_FIELD_NUMBER;
       hash = (53 * hash) + getScaleType();
       hash = (37 * hash) + MUTE_FIELD_NUMBER;
@@ -639,7 +640,7 @@ public final class SvgaInfo {
 
         height_ = 0D;
 
-        widgetId_ = 0;
+        widgetId_ = 0L;
 
         scaleType_ = 0;
 
@@ -740,7 +741,7 @@ public final class SvgaInfo {
         if (other.getHeight() != 0D) {
           setHeight(other.getHeight());
         }
-        if (other.getWidgetId() != 0) {
+        if (other.getWidgetId() != 0L) {
           setWidgetId(other.getWidgetId());
         }
         if (other.getScaleType() != 0) {
@@ -1032,18 +1033,18 @@ public final class SvgaInfo {
         return this;
       }
 
-      private int widgetId_ ;
+      private long widgetId_ ;
       /**
        * <pre>
        * Created on Flutter side and should be unique accross all
        * SVGA widgets, used to handle quick-dispose occasion
        * </pre>
        *
-       * <code>int32 widgetId = 5;</code>
+       * <code>int64 widgetId = 5;</code>
        * @return The widgetId.
        */
       @java.lang.Override
-      public int getWidgetId() {
+      public long getWidgetId() {
         return widgetId_;
       }
       /**
@@ -1052,11 +1053,11 @@ public final class SvgaInfo {
        * SVGA widgets, used to handle quick-dispose occasion
        * </pre>
        *
-       * <code>int32 widgetId = 5;</code>
+       * <code>int64 widgetId = 5;</code>
        * @param value The widgetId to set.
        * @return This builder for chaining.
        */
-      public Builder setWidgetId(int value) {
+      public Builder setWidgetId(long value) {
         
         widgetId_ = value;
         onChanged();
@@ -1068,12 +1069,12 @@ public final class SvgaInfo {
        * SVGA widgets, used to handle quick-dispose occasion
        * </pre>
        *
-       * <code>int32 widgetId = 5;</code>
+       * <code>int64 widgetId = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearWidgetId() {
         
-        widgetId_ = 0;
+        widgetId_ = 0L;
         onChanged();
         return this;
       }
@@ -1964,7 +1965,7 @@ public final class SvgaInfo {
     java.lang.String[] descriptorData = {
       "\n\017svga_info.proto\"\205\001\n\014SVGALoadInfo\022\020\n\010as" +
       "setUrl\030\001 \001(\t\022\021\n\tremoteUrl\030\002 \001(\t\022\r\n\005width" +
-      "\030\003 \001(\001\022\016\n\006height\030\004 \001(\001\022\020\n\010widgetId\030\005 \001(\005" +
+      "\030\003 \001(\001\022\016\n\006height\030\004 \001(\001\022\020\n\010widgetId\030\005 \001(\003" +
       "\022\021\n\tscaleType\030\006 \001(\005\022\014\n\004mute\030\007 \001(\010\">\n\nRes" +
       "ultInfo\022\014\n\004code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\022\021" +
       "\n\ttextureId\030\003 \001(\003B#\n!com.svga.plugin.svg" +

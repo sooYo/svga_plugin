@@ -16,7 +16,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'remoteUrl', protoName: 'remoteUrl')
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'width', $pb.PbFieldType.OD)
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'height', $pb.PbFieldType.OD)
-    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'widgetId', $pb.PbFieldType.O3, protoName: 'widgetId')
+    ..aInt64(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'widgetId', protoName: 'widgetId')
     ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'scaleType', $pb.PbFieldType.O3, protoName: 'scaleType')
     ..aOB(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mute')
     ..hasRequiredFields = false
@@ -28,7 +28,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     $core.String? remoteUrl,
     $core.double? width,
     $core.double? height,
-    $core.int? widgetId,
+    $fixnum.Int64? widgetId,
     $core.int? scaleType,
     $core.bool? mute,
   }) {
@@ -114,9 +114,9 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
   void clearHeight() => clearField(4);
 
   @$pb.TagNumber(5)
-  $core.int get widgetId => $_getIZ(4);
+  $fixnum.Int64 get widgetId => $_getI64(4);
   @$pb.TagNumber(5)
-  set widgetId($core.int v) { $_setSignedInt32(4, v); }
+  set widgetId($fixnum.Int64 v) { $_setInt64(4, v); }
   @$pb.TagNumber(5)
   $core.bool hasWidgetId() => $_has(4);
   @$pb.TagNumber(5)
