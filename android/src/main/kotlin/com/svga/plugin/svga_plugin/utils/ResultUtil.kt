@@ -37,6 +37,11 @@ object ResultUtil {
         return result(StatusCodes.DATA_ERROR.code, message)
     }
 
+    fun parseSVGAFailed(source: String): ByteArray {
+        val message = "SVGA from $source parse failed"
+        return result(StatusCodes.SVGA_PARSE_ERROR.code, message)
+    }
+
     fun successWithTexture(textureId: Long): ByteArray {
         assert(textureId >= 0) { "Texture ID should always be a positive integer" }
         return result(StatusCodes.OK.code, "Success", textureId)

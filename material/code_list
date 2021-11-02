@@ -12,3 +12,4 @@ argument_type_error=100002#Arguments from channel method params map with a wrong
 texture_error=100003#Error encountered during the texture creation process
 data_missing=100004#Some of the key params are missing
 data_error=100005#Data format or data content gets wrong
+svga_parse_error=100006#SVGA parser failed to handle the source

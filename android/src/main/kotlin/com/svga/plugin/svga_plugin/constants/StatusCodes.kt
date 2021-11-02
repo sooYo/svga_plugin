@@ -23,4 +23,7 @@ enum class StatusCodes(val code: Int) {
     // Data format or data content gets wrong
     DATA_ERROR(100005),
     
+    // SVGA parser failed to handle the source
+    SVGA_PARSE_ERROR(100006),
+    
 }

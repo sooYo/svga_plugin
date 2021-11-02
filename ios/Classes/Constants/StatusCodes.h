@@ -23,4 +23,7 @@ typedef NS_ENUM(NSInteger, StatusCodes) {
     // Data format or data content gets wrong
     dataError = 100005,
     
+    // SVGA parser failed to handle the source
+    svgaParseError = 100006,
+    
 };

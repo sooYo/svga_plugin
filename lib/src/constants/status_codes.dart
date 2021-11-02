@@ -21,4 +21,7 @@ class StatusCodes {
   // Data format or data content gets wrong
   static const dataError = 100005;
   
+  // SVGA parser failed to handle the source
+  static const svgaParseError = 100006;
+  
 }
