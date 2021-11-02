@@ -1,11 +1,11 @@
 package com.svga.plugin.svga_plugin.flutter
 
 import android.view.Surface
-import android.widget.ImageView
 import com.svga.plugin.svga_plugin.proto.SvgaInfo.SVGALoadInfo
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAParser
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.utils.ResultUtil
+import com.svga.plugin.svga_plugin.utils.imageViewScaleType
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.TextureRegistry
 import java.lang.ref.WeakReference
@@ -32,7 +32,7 @@ class FlutterParseCompletion(
             return
         }
 
-        val drawer = FlutterCanvasDrawer(videoItem)
+        val drawer = FlutterCanvasDrawer(videoItem, loadInfo.loopCount, loadInfo.mute)
         val textureEntry = registry.get()?.createSurfaceTexture()
         val texture = textureEntry?.surfaceTexture()
 
@@ -57,7 +57,7 @@ class FlutterParseCompletion(
         dataSource.get()?.onModelGenerated(model)
 
         result.success(ResultUtil.successWithTexture(textureEntry.id()))
-        drawer.drawOnSurface(model.surface, ImageView.ScaleType.FIT_CENTER)
+        drawer.drawOnSurface(model.surface, loadInfo.imageViewScaleType)
     }
 
     override fun onError() {
