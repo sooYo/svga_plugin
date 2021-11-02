@@ -1,16 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-
-class SvgaPlugin {
-  static const MethodChannel _channel = const MethodChannel('svga_plugin');
-
-  static Future<int> crateSVGA(double width, double height) async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion', {
-      'width': width,
-      'height': height,
-    });
-
-    return int.tryParse(version!) ?? 0;
-  }
-}
+export 'src/constants/status_codes.dart';
+export 'src/plugin.dart';
+export 'src/svga/svga.dart';
+export 'src/widget_id.dart';
