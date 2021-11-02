@@ -55,4 +55,9 @@ genTemplateHeader
 touch "$PB_HEADER"
 collectHeaders
 
+# Create PB extension dir struct
+mkdir -p ../lib/src/proto/extension/src
+touch ../lib/src/proto/extension/extension.dart
+printf "\nexport \"extension/extension.dart\";" >>"$PB_HEADER"
+
 echo 'Update PB done!'
