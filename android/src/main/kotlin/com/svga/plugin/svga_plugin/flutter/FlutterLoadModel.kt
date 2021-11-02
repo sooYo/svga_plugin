@@ -8,7 +8,7 @@ class FlutterLoadModel(
     val surface: Surface,
     val drawer: FlutterCanvasDrawer,
     private val textureEntry: SurfaceTextureEntry,
-    val widgetId: Int,
+    val widgetId: Long,
     val movie: Svga.MovieEntity?
 ) {
     class Builder {
@@ -17,7 +17,7 @@ class FlutterLoadModel(
         private lateinit var textureEntry: SurfaceTextureEntry
 
         private var movie: Svga.MovieEntity? = null
-        private var widgetId: Int = -1
+        private var widgetId: Long = -1
 
         fun setDrawer(drawer: FlutterCanvasDrawer) = apply { this.drawer = drawer }
 
@@ -27,7 +27,7 @@ class FlutterLoadModel(
 
         fun setMovie(movie: Svga.MovieEntity?) = apply { this.movie = movie }
 
-        fun setWidgetId(id: Int) = apply { widgetId = id }
+        fun setWidgetId(id: Long) = apply { widgetId = id }
 
         fun build(): FlutterLoadModel {
             return FlutterLoadModel(surface, drawer, textureEntry, widgetId, movie)

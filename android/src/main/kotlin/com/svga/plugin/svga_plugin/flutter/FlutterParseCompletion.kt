@@ -19,7 +19,7 @@ class FlutterParseCompletion(
     private val registry = WeakReference(dataSource.registry)
 
     interface DataSource {
-        val widgetIdList: List<Int>
+        val widgetIdList: List<Long>
 
         val registry: TextureRegistry
 
