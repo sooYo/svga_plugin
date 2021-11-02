@@ -1,0 +1,13 @@
+// Define channel methods between Flutter and native sides, the basic format is:
+//
+// method_name[#comment]\n
+//
+// You are not supposed to alter the platform-specific method list file directly
+// because this may raise inconsistent problems. Once a new method is created,
+// please add to this file and run "methods_gen.sh" to update all relative files
+
+loadFromAsset#Load SVGA file from Flutter assets
+loadFromURL#Load SVGA file from remote  url
+releaseSVGAWidget#Invoke when a SVGA widget is disposed
+pauseSVGAWidget#Pause SVGA widget animation to save resource
+resumeSVGAWidget#Resume a paused SVGA widget

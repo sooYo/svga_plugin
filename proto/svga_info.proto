@@ -1,0 +1,34 @@
+syntax = "proto3";
+option java_package = "com.svga.plugin.svga_plugin.proto";
+
+message SVGALoadInfo {
+  // Exclusive with remoteUrl
+  string assetUrl = 1;
+
+  // Exclusive with assetUrl
+  string remoteUrl = 2;
+
+  double width = 3;
+  double height = 4;
+
+  // Created on Flutter side and should be unique accross all
+  // SVGA widgets, used to handle quick-dispose occasion
+  int32 widgetId = 5;
+
+  // Alias to andriod's ImageView.ScaleType
+  int32 scaleType = 6;
+
+  bool mute = 7;
+}
+
+message ResultInfo {
+  int32 code = 1;
+
+  string message = 2;
+
+  // Available when invoke a load function, and shall all be
+  // -1 if it's not. when it's less than 0, it shouldn't be
+  // uesed to construct Texture widget in Flutter
+  int64 textureId = 3;
+}
+
