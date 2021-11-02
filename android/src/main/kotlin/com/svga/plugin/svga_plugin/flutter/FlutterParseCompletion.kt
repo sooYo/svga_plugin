@@ -3,7 +3,6 @@ package com.svga.plugin.svga_plugin.flutter
 import android.view.Surface
 import android.widget.ImageView
 import com.svga.plugin.svga_plugin.proto.SvgaInfo.SVGALoadInfo
-import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAParser
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.utils.ResultUtil
@@ -57,10 +56,16 @@ class FlutterParseCompletion(
 
         dataSource.get()?.onModelGenerated(model)
 
-        result.success(textureEntry.id())
+        result.success(ResultUtil.successWithTexture(textureEntry.id()))
         drawer.drawOnSurface(model.surface, ImageView.ScaleType.FIT_CENTER)
     }
 
     override fun onError() {
+        val source = when (loadInfo.assetUrl.isNotEmpty()) {
+            true -> loadInfo.assetUrl
+            else -> loadInfo.remoteUrl
+        }
+
+        result.success(ResultUtil.parseSVGAFailed(source))
     }
 }

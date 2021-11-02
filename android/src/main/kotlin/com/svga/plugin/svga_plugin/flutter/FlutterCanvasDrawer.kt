@@ -4,10 +4,10 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.view.Surface
 import android.widget.ImageView
-import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGADynamicEntity
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.svga_android_lib.drawer.SVGACanvasDrawer
+import java.lang.ref.WeakReference
 
 /**
  * Drawer for Flutter plugin
@@ -23,7 +23,7 @@ class FlutterCanvasDrawer(
 ) : SVGACanvasDrawer(videoItem, SVGADynamicEntity()), FlutterSVGADriver.UpdateListener {
 
     private val driver = FlutterSVGADriver(videoItem, mute, repeatCount)
-    private lateinit var surface: Surface
+    private lateinit var surface: WeakReference<Surface>
     private lateinit var scaleType: ImageView.ScaleType
 
     init {
@@ -31,32 +31,28 @@ class FlutterCanvasDrawer(
     }
 
     fun drawOnSurface(surface: Surface, scaleType: ImageView.ScaleType) {
-        this.surface = surface
         this.scaleType = scaleType
+        this.surface = WeakReference(surface)
 
         driver.start()
     }
 
-    fun release() {
-        surface.release()
-        driver.release()
-    }
+    fun release() = driver.release()
 
     fun pause() = driver.pause()
 
     fun resume() = driver.resume()
 
+    @Suppress("Unused")
     fun stop() = driver.stop()
 
     override fun onUpdate(frame: Int) {
+        val surface = this.surface.get() ?: return
+
         surface.lockCanvas(null).run {
             drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
             drawFrame(this, frame, scaleType)
             surface.unlockCanvasAndPost(this)
-        }
-
-        if (videoItem.movie != null) {
-            SoundPool.instance.onFrameChangedForMovie(videoItem.movie!!, frame)
         }
     }
 }

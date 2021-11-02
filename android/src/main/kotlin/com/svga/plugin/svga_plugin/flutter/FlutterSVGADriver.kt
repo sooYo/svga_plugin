@@ -33,7 +33,7 @@ class FlutterSVGADriver(
 
         _animator?.addUpdateListener {
             val time = (it.animatedValue as Float).coerceAtLeast(0f) / 1000f
-            delegate?.onUpdate((time * movie.fps).toInt())
+            onFrameUpdate((time * movie.fps).toInt())
         }
 
         _animator?.addListener(object : Animator.AnimatorListener {
@@ -44,7 +44,7 @@ class FlutterSVGADriver(
             // When repeating this animation, always notify delegate animation ran to end
             // for some occasions the progress calculation gets wrong due to Float precision
             override fun onAnimationRepeat(animation: Animator?) {
-                delegate?.onUpdate(movie.frames)
+                onFrameUpdate(movie.frames)
             }
         })
     }
@@ -97,6 +97,14 @@ class FlutterSVGADriver(
 
         if (!mute && movie.movie != null) {
             SoundPool.instance.unloadAudiosForMovie(movie.movie)
+        }
+    }
+
+    private fun onFrameUpdate(frame: Int) {
+        delegate?.onUpdate(frame)
+
+        if (!mute && movie.movie != null) {
+            SoundPool.instance.onFrameChangedForMovie(movie.movie!!, frame)
         }
     }
 }
