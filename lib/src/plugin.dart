@@ -11,12 +11,18 @@ import 'widget_id.dart';
 
 class SvgaPlugin {
   static const _channel = const MethodChannel('svga_plugin');
-  static final _generator = GeneratorFactory.generatorOf(IDStrategy.timeStamp);
+  static final _generator = GeneratorFactory.generatorOf(IDStrategy.combine);
 
   /// Shortcut for invalid widget ID
   static ResultInfo get _invalidWigetID => ResultInfo()
     ..code = StatusCodes.illegalWidgetId
     ..message = 'Plugin provides an illegal widget ID'
+    ..textureId = Int64(-1);
+
+  /// PB parse error, for result generating
+  static ResultInfo get _parsePBFailed => ResultInfo()
+    ..code = StatusCodes.pbParseFailed
+    ..message = 'Cannot convert data bytes into legal PB struct'
     ..textureId = Int64(-1);
 
   /// Get widget's temparary ID
@@ -52,34 +58,67 @@ class SvgaPlugin {
     if (remoted) {
       loadInfo.remoteUrl = source;
     } else {
-      loadInfo.assetUrl = source;
+      loadInfo.assetUrl = 'flutter_assets/$source';
     }
 
     final method = remoted ? Methods.loadFromURL : Methods.loadFromAsset;
-    return await _channel.invokeMethod(method, loadInfo.writeToBuffer());
+    final bytes = await _channel.invokeMethod(method, loadInfo.writeToBuffer());
+
+    try {
+      return ResultInfo.fromBuffer(bytes as List<int>);
+    } catch (e) {
+      return _parsePBFailed;
+    }
   }
 
-  Future<ResultInfo> pause(int widgetId) async {
+  static Future<ResultInfo> pause(int widgetId) async {
     if (widgetId < 0) {
       return _invalidWigetID;
     }
 
-    return await _channel.invokeMethod(Methods.pauseSVGAWidget, widgetId);
+    final bytes = await _channel.invokeMethod(
+      Methods.pauseSVGAWidget,
+      widgetId,
+    );
+
+    try {
+      return ResultInfo.fromBuffer(bytes as List<int>);
+    } catch (e) {
+      return _parsePBFailed;
+    }
   }
 
-  Future<ResultInfo> resume(int widgetId) async {
+  static Future<ResultInfo> resume(int widgetId) async {
     if (widgetId < 0) {
       return _invalidWigetID;
     }
 
-    return await _channel.invokeMethod(Methods.resumeSVGAWidget, widgetId);
+    final bytes = await _channel.invokeMethod(
+      Methods.resumeSVGAWidget,
+      widgetId,
+    );
+
+    try {
+      return ResultInfo.fromBuffer(bytes as List<int>);
+    } catch (e) {
+      return _parsePBFailed;
+    }
   }
 
-  Future<ResultInfo> dispose(int widgetId) async {
+  static Future<ResultInfo> dispose(int widgetId) async {
     if (widgetId < 0) {
       return _invalidWigetID;
     }
 
-    return await _channel.invokeMethod(Methods.releaseSVGAWidget, widgetId);
+    final bytes = await _channel.invokeMethod(
+      Methods.releaseSVGAWidget,
+      widgetId,
+    );
+
+    try {
+      return ResultInfo.fromBuffer(bytes as List<int>);
+    } catch (e) {
+      return _parsePBFailed;
+    }
   }
 }

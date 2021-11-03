@@ -9,6 +9,8 @@ class GeneratorFactory {
         return _RandomIDGenerator(100000000);
       case IDStrategy.timeStamp:
         return _TimestampIDGenerator();
+      case IDStrategy.combine:
+        return _TimestampRandomSeedIDGenerator();
       default:
         assert(false, 'Undefined generator for strategy: $strategy');
         return null;
@@ -23,6 +25,7 @@ abstract class IDGenerator {
 enum IDStrategy {
   timeStamp,
   randomInt,
+  combine,
 }
 
 // region Preset Generators
@@ -39,5 +42,22 @@ class _RandomIDGenerator extends IDGenerator {
 
   @override
   int generateID() => Random(seed).nextInt(max);
+}
+
+class _TimestampRandomSeedIDGenerator extends IDGenerator {
+  final _timestampGenerator = _TimestampIDGenerator();
+  final _randomGenerator = _RandomIDGenerator(1000);
+
+  @override
+  int generateID() {
+    final timeBasedID = _timestampGenerator.generateID();
+    final randomID = _randomGenerator.generateID();
+
+    try {
+      return timeBasedID + randomID;
+    } catch (_) {
+      return timeBasedID;
+    }
+  }
 }
 // endregion Preset Generators

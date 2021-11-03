@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 
 import 'constants/type_alias.dart';
 import 'plugin.dart';
@@ -18,7 +20,8 @@ class SVGAWidget extends StatefulWidget {
     this.indicatorRadius = 8.0,
     this.showLoadingIndicator = true,
   })  : _remoted = false,
-        _source = assetPath;
+        _source = assetPath,
+        assert(loadingWidget != null || indicatorRadius >= 0.0);
 
   const SVGAWidget.network(
     String url, {
@@ -33,7 +36,8 @@ class SVGAWidget extends StatefulWidget {
     this.indicatorRadius = 8.0,
     this.showLoadingIndicator = true,
   })  : _remoted = true,
-        _source = url;
+        _source = url,
+        assert(loadingWidget != null || indicatorRadius >= 0.0);
 
   /// If widget cannot gain size info from outside, it will automatically
   /// embed a [LayoutBuilder] into the widget hierarchy. The native parser
@@ -76,7 +80,7 @@ class SVGAWidget extends StatefulWidget {
   /// data is loading. Has no effect if [loadingWidget] is not null
   final bool showLoadingIndicator;
 
-  /// The default indicator size, minimum size is 8.0,
+  /// The default indicator size, minimum size is 3.0,
   /// has no effect if [loadingWidget] is not null
   final double indicatorRadius;
 
@@ -101,20 +105,125 @@ class _SVGAState extends State<SVGAWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  void dispose() {
+    SvgaPlugin.dispose(_id);
+    super.dispose();
   }
 
-  Future<ResultInfo> _loadSVGA(double width, double height) async {
+  @override
+  Widget build(BuildContext context) {
+    // Custom loading style
+    final loadingWidget = widget.loadingWidget ??
+        Visibility(
+          child: CupertinoActivityIndicator(
+            radius: max(widget.indicatorRadius, 3.0),
+          ),
+        );
+
+    // Custom error widget
+    final errorWidget = widget.errorWidget ?? Container();
+
+    // Embeded LayoutBuilder
+    if (widget.width == null || widget.height == null) {
+      return LayoutBuilder(
+        builder: (context, constraints) => _SVGACore(
+          _id,
+          width: constraints.maxWidth,
+          height: constraints.maxHeight,
+          source: widget._source,
+          remoted: widget._remoted,
+          fit: widget.fit,
+          mute: widget.mute,
+          loopCount: widget.loopCount,
+          loadingWidget: loadingWidget,
+          errorWidget: errorWidget,
+          onComplete: widget.onComplete,
+        ),
+      );
+    }
+
+    // Container without size calculation
+    return Container(
+      width: widget.width,
+      height: widget.height,
+      child: _SVGACore(
+        _id,
+        width: widget.width!,
+        height: widget.height!,
+        source: widget._source,
+        remoted: widget._remoted,
+        fit: widget.fit,
+        mute: widget.mute,
+        loopCount: widget.loopCount,
+        loadingWidget: loadingWidget,
+        errorWidget: errorWidget,
+        onComplete: widget.onComplete,
+      ),
+    );
+  }
+}
+
+class _SVGACore extends StatelessWidget {
+  _SVGACore(
+    this.widgetId, {
+    required this.width,
+    required this.height,
+    required this.source,
+    required this.remoted,
+    required this.loadingWidget,
+    required this.errorWidget,
+    this.onComplete,
+    this.loopCount = 0,
+    this.mute = false,
+    this.fit = BoxFit.contain,
+  });
+
+  final int widgetId;
+
+  final String source;
+  final bool remoted;
+
+  final double width;
+  final double height;
+  final Widget loadingWidget;
+  final Widget errorWidget;
+
+  final int loopCount;
+  final bool mute;
+  final BoxFit fit;
+
+  final SVGALoadCompletion? onComplete;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _parseSvga(width, height),
+      builder: (BuildContext context, AsyncSnapshot<ResultInfo> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.connectionState == ConnectionState.active) {
+          return Center(child: loadingWidget);
+        }
+
+        return (snapshot.data?.isOK ?? false)
+            ? Texture(textureId: snapshot.data!.textureId.toInt())
+            : errorWidget;
+      },
+    );
+  }
+
+  Future<ResultInfo> _parseSvga(double width, double height) async {
     final result = await SvgaPlugin.load(
-      _id,
-      source: widget._source,
+      widgetId,
       width: width,
       height: height,
-      mute: widget.mute,
+      fit: fit,
+      mute: mute,
+      source: source,
+      remoted: remoted,
+      loopCount: max(loopCount, 0),
     );
 
-    widget.onComplete?.call(result);
+    onComplete?.call(result);
     return result;
   }
 }

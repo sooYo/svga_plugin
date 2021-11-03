@@ -18,23 +18,17 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: LayoutBuilder(
-          builder: (context, constraint) {
-            return FutureBuilder(
-              future: SvgaPlugin.crateSVGA(
-                constraint.maxWidth,
-                constraint.maxHeight,
-              ),
-              builder: (context, AsyncSnapshot<int> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.data != null) {
-                  return Texture(textureId: snapshot.data!);
-                }
-
-                return Container();
-              },
-            );
-          },
+        body: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.2,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
+          ),
+          itemCount: 10,
+          itemBuilder: (context, index) => SVGAWidget.asset(
+            'lib/assets/jojo_audio.svga',
+          ),
         ),
       ),
     );
