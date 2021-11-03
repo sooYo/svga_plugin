@@ -31,7 +31,7 @@ object SVGACache {
         onCreate(context, Type.DEFAULT)
     }
 
-    fun onCreate(context: Context?, type: Type) {
+    private fun onCreate(context: Context?, type: Type) {
         if (isInitialized()) return
         context ?: return
         cacheDir = "${context.cacheDir.absolutePath}/svga/"

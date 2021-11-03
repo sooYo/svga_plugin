@@ -6,6 +6,7 @@ import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
 import android.util.Log
+import android.util.LongSparseArray
 import com.svga.plugin.svga_plugin.sound_ext.contants.LoadCompletion
 import com.svga.plugin.svga_plugin.sound_ext.models.MovieSoundModel
 import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
@@ -19,7 +20,9 @@ class SoundPool private constructor(maxStream: Int = 20) {
     }
 
     private var _pool: SoundPool? = null
-    private val _models: MutableMap<Int, MovieSoundModel> = mutableMapOf()
+    private val _models = LongSparseArray<MovieSoundModel>()
+    private val _soundIDMap = HashMap<Int, Long>()
+
     private lateinit var _cache: SoundCache
 
     init {
@@ -39,14 +42,8 @@ class SoundPool private constructor(maxStream: Int = 20) {
         }
 
         _pool?.setOnLoadCompleteListener { _, soundId, status ->
-            val model = try {
-                _models.values.first {
-                    it.audiosList.find { e -> e.soundId == soundId } != null
-                }
-            } catch (e: Exception) {
-                Log.e("TAG", "LoadComplete: $soundId not found, $e")
-                null
-            } ?: return@setOnLoadCompleteListener
+            val movieId = _soundIDMap[soundId] ?: return@setOnLoadCompleteListener
+            val model = _models[movieId] ?: return@setOnLoadCompleteListener
 
             model.loadCount += 1
             model.errorCount += if (status != 0) 1 else 0
@@ -62,22 +59,18 @@ class SoundPool private constructor(maxStream: Int = 20) {
     }
 
     // region Core
-    fun loadAudiosFromMovie(movie: Svga.MovieEntity, completion: LoadCompletion) {
-        val model = generateSoundModelForMovie(movie, completion)
+    fun loadAudiosFromMovie(movie: Svga.MovieEntity, movieId: Long, completion: LoadCompletion) {
+        val model = generateSoundModelForMovie(movie, movieId, completion)
         if (model == null || model.audiosList.isEmpty()) {
             completion()
             return
         }
 
-        setModelsIntoSoundPool(model)
+        setModelsIntoSoundPool(model, movieId)
     }
 
-    fun stopAudiosForMovie(movie: Svga.MovieEntity?) {
-        if (movie == null) {
-            return
-        }
-
-        _models[movie.hashCode()]?.let {
+    fun stopAudiosForMovie(movieId: Long) {
+        _models[movieId]?.let {
             it.audiosList.forEach { e ->
                 if (e.streamId != null) {
                     _pool?.stop(e.streamId!!)
@@ -88,12 +81,8 @@ class SoundPool private constructor(maxStream: Int = 20) {
         }
     }
 
-    fun pauseAudiosForMovie(movie: Svga.MovieEntity?) {
-        if (movie == null) {
-            return
-        }
-
-        _models[movie.hashCode()]?.let {
+    fun pauseAudiosForMovie(movieId: Long) {
+        _models[movieId]?.let {
             it.audiosList.forEach { e ->
                 if (e.streamId != null) {
                     _pool?.pause(e.streamId!!)
@@ -104,12 +93,8 @@ class SoundPool private constructor(maxStream: Int = 20) {
         }
     }
 
-    fun resumeAudiosForMovie(movie: Svga.MovieEntity?) {
-        if (movie == null) {
-            return
-        }
-
-        _models[movie.hashCode()]?.let {
+    fun resumeAudiosForMovie(movieId: Long) {
+        _models[movieId]?.let {
             it.audiosList.forEach { e ->
                 if (e.streamId != null) {
                     _pool?.resume(e.streamId!!)
@@ -120,12 +105,8 @@ class SoundPool private constructor(maxStream: Int = 20) {
         }
     }
 
-    fun unloadAudiosForMovie(movie: Svga.MovieEntity?) {
-        if (movie == null) {
-            return
-        }
-
-        _models[movie.hashCode()]?.let {
+    fun unloadAudiosForMovie(movieId: Long) {
+        _models[movieId]?.let {
             _cache.cleanAudioFiles(it.audioFiles)
             it.audiosList.forEach { e ->
                 if (e.streamId != null) {
@@ -138,16 +119,12 @@ class SoundPool private constructor(maxStream: Int = 20) {
         }
     }
 
-    fun playMovie(movie: Svga.MovieEntity?, play: Boolean) {
-        if (movie == null) {
-            return
-        }
-
-        _models[movie.hashCode()]?.let { it.isPlaying = play }
+    fun playMovie(movieId: Long, play: Boolean) {
+        _models[movieId]?.let { it.isPlaying = play }
     }
 
-    fun onFrameChangedForMovie(movie: Svga.MovieEntity, frame: Int) {
-        val model = _models[movie.hashCode()] ?: return
+    fun onFrameChangedForMovie(movieId: Long, frame: Int) {
+        val model = _models[movieId] ?: return
         if (!model.finishLoad || !model.isPlaying) {
             // Didn't complete loading
             return
@@ -166,11 +143,12 @@ class SoundPool private constructor(maxStream: Int = 20) {
             }
         }
     }
-    // endregion Core
+// endregion Core
 
     // region SoundModel Generate
     private fun generateSoundModelForMovie(
         movie: Svga.MovieEntity,
+        movieId: Long,
         completion: LoadCompletion
     ): MovieSoundModel? {
         if (movie.audiosCount == 0) {
@@ -200,10 +178,10 @@ class SoundPool private constructor(maxStream: Int = 20) {
             }
         }
 
-        return audioModel.also { _models[it.movieId] = it }
+        return audioModel.also { _models.put(movieId, it) }
     }
 
-    private fun setModelsIntoSoundPool(model: MovieSoundModel) {
+    private fun setModelsIntoSoundPool(model: MovieSoundModel, movieId: Long) {
         model.audiosList.forEach { audio ->
             val startTime = audio.entity.startTime.toDouble()
             val totalTime = audio.entity.totalTime.toDouble()
@@ -212,6 +190,10 @@ class SoundPool private constructor(maxStream: Int = 20) {
                 val length = it.available().toDouble()
                 val offset = startTime / totalTime * length
                 _pool?.load(it.fd, offset.toLong(), length.toLong(), 1)
+            }
+
+            if (audio.soundId != null) {
+                _soundIDMap[audio.soundId!!] = movieId
             }
         }
     }

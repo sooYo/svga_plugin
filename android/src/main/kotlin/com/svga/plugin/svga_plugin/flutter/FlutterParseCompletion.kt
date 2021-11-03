@@ -1,7 +1,9 @@
 package com.svga.plugin.svga_plugin.flutter
 
+import android.content.Context
 import android.view.Surface
 import com.svga.plugin.svga_plugin.proto.SvgaInfo.SVGALoadInfo
+import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAParser
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.utils.ResultUtil
@@ -13,10 +15,12 @@ import java.lang.ref.WeakReference
 class FlutterParseCompletion(
     private val loadInfo: SVGALoadInfo,
     private val result: MethodChannel.Result,
+    private val context: Context,
     dataSource: DataSource
 ) : SVGAParser.ParseCompletion {
     private val dataSource = WeakReference(dataSource)
     private val registry = WeakReference(dataSource.registry)
+    private val density = context.resources.displayMetrics.density
 
     interface DataSource {
         val widgetIdList: List<Long>
@@ -26,13 +30,24 @@ class FlutterParseCompletion(
         fun onModelGenerated(model: FlutterLoadModel)
     }
 
+    private val downscaleFactor: Double
+        get() {
+            return with(context.resources.displayMetrics) {
+                when {
+                    densityDpi in 240..400 -> 0.7
+                    densityDpi > 400 -> 0.6
+                    else -> 0.8
+                }
+            }
+        }
+
     override fun onComplete(videoItem: SVGAVideoEntity) {
         if (dataSource.get()?.widgetIdList?.contains(loadInfo.widgetId) != true) {
             result.success(ResultUtil.ok)
             return
         }
 
-        val drawer = FlutterCanvasDrawer(videoItem, loadInfo.loopCount, loadInfo.mute)
+        val drawer = FlutterCanvasDrawer(videoItem, loadInfo)
         val textureEntry = registry.get()?.createSurfaceTexture()
         val texture = textureEntry?.surfaceTexture()
 
@@ -42,8 +57,8 @@ class FlutterParseCompletion(
         }
 
         texture.setDefaultBufferSize(
-            loadInfo.width.toInt(),
-            loadInfo.height.toInt()
+            (loadInfo.width * density * downscaleFactor).toInt(),
+            (loadInfo.height * density * downscaleFactor).toInt()
         )
 
         val model = FlutterLoadModel.Builder()
@@ -56,8 +71,16 @@ class FlutterParseCompletion(
 
         dataSource.get()?.onModelGenerated(model)
 
-        result.success(ResultUtil.successWithTexture(textureEntry.id()))
-        drawer.drawOnSurface(model.surface, loadInfo.imageViewScaleType)
+        val completion: () -> Unit = {
+            result.success(ResultUtil.successWithTexture(textureEntry.id()))
+            drawer.drawOnSurface(model.surface, loadInfo.imageViewScaleType)
+        }
+
+        if (!loadInfo.mute && videoItem.movie != null) {
+            SoundPool.instance.loadAudiosFromMovie(videoItem.movie!!, loadInfo.widgetId, completion)
+        } else {
+            completion()
+        }
     }
 
     override fun onError() {

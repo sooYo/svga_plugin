@@ -1,5 +1,6 @@
 package com.svga.plugin.svga_plugin
 
+import android.content.Context
 import android.util.Log
 import android.util.LongSparseArray
 import androidx.annotation.NonNull
@@ -26,6 +27,7 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private lateinit var parser: SVGAParser
+    private lateinit var context: Context
 
     private val modelMap = LongSparseArray<FlutterLoadModel>()
 
@@ -41,8 +43,10 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
         channel.setMethodCallHandler(this)
 
         registry = flutterPluginBinding.textureRegistry
-        parser = SVGAParser(flutterPluginBinding.applicationContext)
-        SoundPool.instance.updateContext(flutterPluginBinding.applicationContext)
+        context = flutterPluginBinding.applicationContext
+
+        parser = SVGAParser(context)
+        SoundPool.instance.updateContext(context)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -85,20 +89,19 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
 
         widgetIdList.add(info.widgetId)
 
-        val completion = FlutterParseCompletion(info, result, this)
+        val completion = FlutterParseCompletion(info, result, context, this)
 
         if (info.assetUrl.isNotEmpty()) {
-            parser.decodeFromAssets(info.assetUrl, completion, null, info.mute)
+            parser.decodeFromAssets(info.assetUrl, completion)
         } else {
             val url = try {
                 URL(info.remoteUrl)
             } catch (e: Exception) {
-                Log.e("TAG", "URL parse failed: $e")
                 result.success(ResultUtil.dataError("remoteUrl", "is not legal url"))
                 return
             }
 
-            parser.decodeFromURL(url, completion, null, info.mute)
+            parser.decodeFromURL(url, completion)
         }
     }
 

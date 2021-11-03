@@ -9,7 +9,6 @@ import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.drawer.SVGACanvasDrawer
 
 class SVGADrawable(val videoItem: SVGAVideoEntity, val dynamicItem: SVGADynamicEntity) : Drawable() {
-
     constructor(videoItem: SVGAVideoEntity) : this(videoItem, SVGADynamicEntity())
 
     var cleared = true
@@ -30,6 +29,7 @@ class SVGADrawable(val videoItem: SVGAVideoEntity, val dynamicItem: SVGADynamicE
             invalidateSelf()
         }
 
+    var attachViewId: Long = -1
     var scaleType: ImageView.ScaleType = ImageView.ScaleType.MATRIX
 
     private val drawer = SVGACanvasDrawer(videoItem, dynamicItem)
@@ -52,19 +52,19 @@ class SVGADrawable(val videoItem: SVGAVideoEntity, val dynamicItem: SVGADynamicE
     override fun setColorFilter(colorFilter: ColorFilter?) {}
 
     fun resume() {
-        SoundPool.instance.resumeAudiosForMovie(videoItem)
+        SoundPool.instance.resumeAudiosForMovie(attachViewId)
     }
 
     fun pause() {
-        SoundPool.instance.pauseAudiosForMovie(videoItem)
+        SoundPool.instance.pauseAudiosForMovie(attachViewId)
     }
 
     fun stop() {
-        SoundPool.instance.stopAudiosForMovie(videoItem)
+        SoundPool.instance.stopAudiosForMovie(attachViewId)
     }
 
     fun clear() {
-        SoundPool.instance.unloadAudiosForMovie(videoItem)
+        SoundPool.instance.unloadAudiosForMovie(attachViewId)
         videoItem.clear()
     }
 }

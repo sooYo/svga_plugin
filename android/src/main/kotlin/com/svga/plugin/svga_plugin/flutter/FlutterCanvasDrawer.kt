@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.view.Surface
 import android.widget.ImageView
+import com.svga.plugin.svga_plugin.proto.SvgaInfo
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGADynamicEntity
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.svga_android_lib.drawer.SVGACanvasDrawer
@@ -18,11 +19,10 @@ import java.lang.ref.WeakReference
  */
 class FlutterCanvasDrawer(
     videoItem: SVGAVideoEntity,
-    repeatCount: Int = 1,
-    mute: Boolean = false
+    loadInfo: SvgaInfo.SVGALoadInfo
 ) : SVGACanvasDrawer(videoItem, SVGADynamicEntity()), FlutterSVGADriver.UpdateListener {
 
-    private val driver = FlutterSVGADriver(videoItem, mute, repeatCount)
+    private val driver = FlutterSVGADriver(videoItem, loadInfo)
     private lateinit var surface: WeakReference<Surface>
     private lateinit var scaleType: ImageView.ScaleType
 

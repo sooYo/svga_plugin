@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
 import com.svga.plugin.svga_plugin.R
+import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.utils.SVGARange
 import java.lang.ref.WeakReference
 import java.net.URL
@@ -54,10 +55,15 @@ open class SVGAImageView @JvmOverloads constructor(
     private var mStartFrame = 0
     private var mEndFrame = 0
 
+    private var viewId: Long = -1;
+
     init {
+        viewId = System.currentTimeMillis()
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
             this.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         }
+
         attrs?.let { loadAttrs(it) }
     }
 
@@ -100,7 +106,13 @@ open class SVGAImageView @JvmOverloads constructor(
     private fun createParseCompletion(ref: WeakReference<SVGAImageView>): SVGAParser.ParseCompletion {
         return object : SVGAParser.ParseCompletion {
             override fun onComplete(videoItem: SVGAVideoEntity) {
-                ref.get()?.startAnimation(videoItem)
+                if (videoItem.movie != null) {
+                    SoundPool.instance.loadAudiosFromMovie(videoItem.movie!!, viewId) {
+                        ref.get()?.startAnimation(videoItem)
+                    }
+                } else {
+                    ref.get()?.startAnimation(videoItem)
+                }
             }
 
             override fun onError() {}
@@ -151,6 +163,7 @@ open class SVGAImageView @JvmOverloads constructor(
         val drawable = getSVGADrawable() ?: return
         drawable.cleared = false
         drawable.scaleType = scaleType
+        drawable.attachViewId = viewId
     }
 
     private fun getSVGADrawable(): SVGADrawable? {

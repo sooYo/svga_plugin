@@ -1,8 +1,6 @@
 package com.svga.plugin.svga_plugin.svga_android_lib
 
 import android.graphics.Bitmap
-import com.svga.plugin.svga_plugin.sound_ext.SoundPool
-import com.svga.plugin.svga_plugin.sound_ext.contants.LoadCompletion
 import com.svga.plugin.svga_plugin.svga_android_lib.bitmap.SVGABitmapByteArrayDecoder
 import com.svga.plugin.svga_plugin.svga_android_lib.bitmap.SVGABitmapFileDecoder
 import com.svga.plugin.svga_plugin.svga_android_lib.entities.SVGAVideoSpriteEntity
@@ -17,6 +15,7 @@ import java.util.*
  */
 class SVGAVideoEntity {
     var antiAlias: Boolean = true
+
     private var movieItem: MovieEntity? = null
 
     var videoSize = SVGARect(0.0, 0.0, 0.0, 0.0)
@@ -35,10 +34,6 @@ class SVGAVideoEntity {
     private var mCacheDir: File
     private var mFrameHeight = 0
     private var mFrameWidth = 0
-
-    private var mPlayCallback: SVGAParser.PlayCallback? = null
-
-    private lateinit var mCallback: () -> Unit
 
     val movie: MovieEntity? get() = movieItem
 
@@ -72,12 +67,19 @@ class SVGAVideoEntity {
         frames = movieObject.optInt("frames", 0)
     }
 
-    constructor(entity: MovieEntity, cacheDir: File, frameWidth: Int, frameHeight: Int) {
+    constructor(
+        entity: MovieEntity,
+        cacheDir: File,
+        frameWidth: Int,
+        frameHeight: Int
+    ) {
         this.mFrameWidth = frameWidth
         this.mFrameHeight = frameHeight
         this.mCacheDir = cacheDir
         this.movieItem = entity
+
         entity.params?.let(this::setupByMovie)
+
         try {
             parserImages(entity)
         } catch (e: Exception) {
@@ -85,6 +87,7 @@ class SVGAVideoEntity {
         } catch (e: OutOfMemoryError) {
             e.printStackTrace()
         }
+
         resetSprites(entity)
     }
 
@@ -95,23 +98,6 @@ class SVGAVideoEntity {
 
         fps = movieParams.fps
         frames = movieParams.frames
-    }
-
-    internal fun prepare(
-        callback: () -> Unit,
-        playCallback: SVGAParser.PlayCallback?,
-        mute: Boolean = false
-    ) {
-        mCallback = callback
-        mPlayCallback = playCallback
-
-        if (movieItem == null || mute) {
-            mCallback()
-        } else {
-            prepareAudioModel {
-                mCallback()
-            }
-        }
     }
 
     private fun parserImages(json: JSONObject) {
@@ -189,16 +175,6 @@ class SVGAVideoEntity {
     fun clear() {
         spriteList = emptyList()
         imageMap.clear()
-    }
-
-    private fun prepareAudioModel(completion: LoadCompletion) {
-        if (movieItem == null) {
-            return
-        }
-
-        SoundPool.instance.loadAudiosFromMovie(movie!!) {
-            completion()
-        }
     }
 }
 
