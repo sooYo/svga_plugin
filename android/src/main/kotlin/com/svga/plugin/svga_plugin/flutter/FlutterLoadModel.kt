@@ -1,22 +1,24 @@
 package com.svga.plugin.svga_plugin.flutter
 
 import android.view.Surface
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.MovieEntity
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 
 class FlutterLoadModel(
     val surface: Surface,
     val drawer: FlutterCanvasDrawer,
-    private val textureEntry: SurfaceTextureEntry,
+    val textureEntry: SurfaceTextureEntry,
     val widgetId: Long,
-    val movie: Svga.MovieEntity?
+    val source: String,
+    val movie: MovieEntity?
 ) {
     class Builder {
         private lateinit var surface: Surface
         private lateinit var drawer: FlutterCanvasDrawer
         private lateinit var textureEntry: SurfaceTextureEntry
+        private lateinit var source: String
 
-        private var movie: Svga.MovieEntity? = null
+        private var movie: MovieEntity? = null
         private var widgetId: Long = -1
 
         fun setDrawer(drawer: FlutterCanvasDrawer) = apply { this.drawer = drawer }
@@ -25,12 +27,14 @@ class FlutterLoadModel(
 
         fun setTextureEntry(entry: SurfaceTextureEntry) = apply { textureEntry = entry }
 
-        fun setMovie(movie: Svga.MovieEntity?) = apply { this.movie = movie }
+        fun setMovie(movie: MovieEntity?) = apply { this.movie = movie }
 
         fun setWidgetId(id: Long) = apply { widgetId = id }
 
+        fun setSource(source: String) = apply { this.source = source }
+
         fun build(): FlutterLoadModel {
-            return FlutterLoadModel(surface, drawer, textureEntry, widgetId, movie)
+            return FlutterLoadModel(surface, drawer, textureEntry, widgetId, source, movie)
         }
     }
 

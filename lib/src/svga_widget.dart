@@ -15,6 +15,7 @@ class SVGAWidget extends StatefulWidget {
     this.errorWidget,
     this.onComplete,
     this.mute = false,
+    this.play = true,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
     this.indicatorRadius = 8.0,
@@ -31,6 +32,7 @@ class SVGAWidget extends StatefulWidget {
     this.errorWidget,
     this.onComplete,
     this.mute = false,
+    this.play = true,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
     this.indicatorRadius = 8.0,
@@ -58,6 +60,8 @@ class SVGAWidget extends StatefulWidget {
   /// If the target SVGA file contains soundtracks, control whether to
   /// mute them or not. Otherwise, this property has no effect.
   final bool mute;
+
+  final bool play;
 
   final BoxFit fit;
 
@@ -108,6 +112,15 @@ class _SVGAState extends State<SVGAWidget> {
   void dispose() {
     SvgaPlugin.dispose(_id);
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SVGAWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.play != oldWidget.play) {
+      widget.play ? SvgaPlugin.resume(_id) : SvgaPlugin.pause(_id);
+    }
   }
 
   @override

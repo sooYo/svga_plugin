@@ -1,6 +1,7 @@
 package com.svga.plugin.svga_plugin
 
 import android.content.Context
+import android.net.http.HttpResponseCache
 import android.util.Log
 import android.util.LongSparseArray
 import androidx.annotation.NonNull
@@ -11,13 +12,15 @@ import com.svga.plugin.svga_plugin.proto.SvgaInfo
 import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAParser
 import com.svga.plugin.svga_plugin.utils.ResultUtil
+import com.svga.plugin.svga_plugin.utils.source
+import com.svga.plugin.svga_plugin.utils.sourceUrl
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.view.TextureRegistry
-import java.net.URL
+import java.io.File
 
 /** SvgaPlugin */
 class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.DataSource {
@@ -47,6 +50,9 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
 
         parser = SVGAParser(context)
         SoundPool.instance.updateContext(context)
+
+        val cacheDir = File(context.applicationContext.cacheDir, "http")
+        HttpResponseCache.install(cacheDir, 1024 * 1024 * 128)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -87,6 +93,11 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
             return
         }
 
+        // Handle same widget rebuild
+        if (filterRepeatedLoadAction(info, result)) {
+            return
+        }
+
         widgetIdList.add(info.widgetId)
 
         val completion = FlutterParseCompletion(info, result, context, this)
@@ -94,14 +105,13 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
         if (info.assetUrl.isNotEmpty()) {
             parser.decodeFromAssets(info.assetUrl, completion)
         } else {
-            val url = try {
-                URL(info.remoteUrl)
-            } catch (e: Exception) {
+            val remoteUrl = info.sourceUrl
+            if (remoteUrl == null) {
                 result.success(ResultUtil.dataError("remoteUrl", "is not legal url"))
                 return
             }
 
-            parser.decodeFromURL(url, completion)
+            parser.decodeFromURL(remoteUrl, completion)
         }
     }
 
@@ -129,7 +139,7 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
     }
 
     private fun pauseSVGA(call: MethodCall, result: Result) {
-        if (!checkArgumentsType<Int>(call, result)) {
+        if (!checkArgumentsType<Long>(call, result)) {
             return
         }
 
@@ -146,5 +156,30 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
         }
 
         return true
+    }
+
+    /**
+     * Handle the same widget rebuild situation
+     *
+     * Return `true` if this actions should be filtered. This method will automatically release
+     * all resource of the older model if load action should be perform as a source update request
+     */
+    private fun filterRepeatedLoadAction(loadInfo: SvgaInfo.SVGALoadInfo, result: Result): Boolean {
+        if (!widgetIdList.contains(loadInfo.widgetId)) {
+            return false
+        }
+
+        val model = modelMap[loadInfo.widgetId] ?: return false
+        if (model.source == loadInfo.source) {
+            // Reuse the old texture
+            result.success(ResultUtil.successWithTexture(model.textureEntry.id()))
+            return true
+        }
+
+        // Release resource of the old task
+        model.drawer.release()
+        modelMap.remove(loadInfo.widgetId)
+        widgetIdList.remove(loadInfo.widgetId)
+        return false
     }
 }

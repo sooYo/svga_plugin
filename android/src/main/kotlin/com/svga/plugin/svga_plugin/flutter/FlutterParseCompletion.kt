@@ -8,6 +8,7 @@ import com.svga.plugin.svga_plugin.svga_android_lib.SVGAParser
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
 import com.svga.plugin.svga_plugin.utils.ResultUtil
 import com.svga.plugin.svga_plugin.utils.imageViewScaleType
+import com.svga.plugin.svga_plugin.utils.source
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.TextureRegistry
 import java.lang.ref.WeakReference
@@ -66,7 +67,8 @@ class FlutterParseCompletion(
             .setSurface(Surface(texture))
             .setTextureEntry(textureEntry)
             .setWidgetId(loadInfo.widgetId)
-            .setMovie(videoItem.movie)
+            .setSource(loadInfo.source)
+            .setMovie(videoItem.movieItem)
             .build()
 
         dataSource.get()?.onModelGenerated(model)
@@ -76,19 +78,14 @@ class FlutterParseCompletion(
             drawer.drawOnSurface(model.surface, loadInfo.imageViewScaleType)
         }
 
-        if (!loadInfo.mute && videoItem.movie != null) {
-            SoundPool.instance.loadAudiosFromMovie(videoItem.movie!!, loadInfo.widgetId, completion)
+        if (!loadInfo.mute && videoItem.movieItem != null) {
+            SoundPool.instance.loadAudiosFromMovie(videoItem.movieItem!!, loadInfo.widgetId, completion)
         } else {
             completion()
         }
     }
 
     override fun onError() {
-        val source = when (loadInfo.assetUrl.isNotEmpty()) {
-            true -> loadInfo.assetUrl
-            else -> loadInfo.remoteUrl
-        }
-
-        result.success(ResultUtil.parseSVGAFailed(source))
+        result.success(ResultUtil.parseSVGAFailed(loadInfo.source))
     }
 }
