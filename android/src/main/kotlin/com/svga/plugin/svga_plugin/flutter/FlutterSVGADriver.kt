@@ -6,7 +6,6 @@ import android.animation.ValueAnimator.INFINITE
 import com.svga.plugin.svga_plugin.proto.SvgaInfo
 import com.svga.plugin.svga_plugin.sound_ext.SoundPool
 import com.svga.plugin.svga_plugin.svga_android_lib.SVGAVideoEntity
-import kotlin.math.roundToLong
 
 class FlutterSVGADriver(
     private val movie: SVGAVideoEntity,
@@ -22,18 +21,18 @@ class FlutterSVGADriver(
     val isRunning: Boolean get() = _animator?.isRunning ?: false
 
     init {
-        val duration = movie.frames / movie.fps.toFloat() * 1000f
+        val duration = (movie.frames + 1) * (1000 / movie.FPS).toLong()
 
-        _animator = ValueAnimator.ofFloat(0f, duration)
-        _animator?.duration = duration.roundToLong()
+        _animator = ValueAnimator.ofInt(0, movie.frames)
+        _animator?.duration = duration
         _animator?.repeatCount = when {
             loadInfo.loopCount <= 0 -> INFINITE
             else -> loadInfo.loopCount - 1
         }
 
         _animator?.addUpdateListener {
-            val time = (it.animatedValue as Float).coerceAtLeast(0f) / 1000f
-            onFrameUpdate((time * movie.fps).toInt())
+            val currentFrame = _animator!!.animatedValue as Int
+            onFrameUpdate(currentFrame.coerceAtLeast(0).coerceAtMost(movie.frames))
         }
 
         _animator?.addListener(object : Animator.AnimatorListener {
@@ -52,7 +51,7 @@ class FlutterSVGADriver(
     fun start() {
         _animator?.start()
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.playMovie(loadInfo.widgetId, true)
         }
     }
@@ -60,7 +59,7 @@ class FlutterSVGADriver(
     fun pause() {
         _animator?.pause()
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.pauseAudiosForMovie(loadInfo.widgetId)
         }
     }
@@ -68,7 +67,7 @@ class FlutterSVGADriver(
     fun resume() {
         _animator?.resume()
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.resumeAudiosForMovie(loadInfo.widgetId)
         }
     }
@@ -80,7 +79,7 @@ class FlutterSVGADriver(
 
         _animator?.end()
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.stopAudiosForMovie(loadInfo.widgetId)
         }
     }
@@ -95,7 +94,7 @@ class FlutterSVGADriver(
         _animator?.end()
         _animator = null
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.unloadAudiosForMovie(loadInfo.widgetId)
         }
     }
@@ -103,7 +102,7 @@ class FlutterSVGADriver(
     private fun onFrameUpdate(frame: Int) {
         delegate?.onUpdate(frame)
 
-        if (!loadInfo.mute && movie.movie != null) {
+        if (!loadInfo.mute && movie.movieItem != null) {
             SoundPool.instance.onFrameChangedForMovie(loadInfo.widgetId, frame)
         }
     }
