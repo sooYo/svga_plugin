@@ -10,6 +10,7 @@ class FlutterLoadModel(
     val textureEntry: SurfaceTextureEntry,
     val widgetId: Long,
     val source: String,
+    val continual: Boolean,
     val movie: MovieEntity?
 ) {
     class Builder {
@@ -18,6 +19,7 @@ class FlutterLoadModel(
         private lateinit var textureEntry: SurfaceTextureEntry
         private lateinit var source: String
 
+        private var continual: Boolean = true
         private var movie: MovieEntity? = null
         private var widgetId: Long = -1
 
@@ -33,8 +35,18 @@ class FlutterLoadModel(
 
         fun setSource(source: String) = apply { this.source = source }
 
+        fun setContinual(continual: Boolean) = apply { this.continual = continual }
+
         fun build(): FlutterLoadModel {
-            return FlutterLoadModel(surface, drawer, textureEntry, widgetId, source, movie)
+            return FlutterLoadModel(
+                surface,
+                drawer,
+                textureEntry,
+                widgetId,
+                source,
+                continual,
+                movie
+            )
         }
     }
 

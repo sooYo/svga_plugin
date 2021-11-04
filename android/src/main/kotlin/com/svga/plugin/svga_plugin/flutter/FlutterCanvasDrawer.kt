@@ -34,10 +34,12 @@ class FlutterCanvasDrawer(
         this.scaleType = scaleType
         this.surface = WeakReference(surface)
 
-        driver.start()
+        start()
     }
 
     fun release() = driver.release()
+
+    fun start() = driver.start()
 
     fun pause() = driver.pause()
 

@@ -103,6 +103,7 @@ class _SVGAListState extends State<SVGAList> with NavigatorObserver {
         itemBuilder: (context, index) => SVGAWidget.network(
           urls[index],
           play: !_covered,
+          continual: false,
         ),
       ),
     );

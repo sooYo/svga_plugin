@@ -134,7 +134,13 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
             return
         }
 
-        modelMap[call.arguments as Long]?.drawer?.resume()
+        modelMap[call.arguments as Long]?.apply {
+            when (continual) {
+                true -> drawer.resume()
+                else -> drawer.start()
+            }
+        }
+
         result.success(ResultUtil.ok)
     }
 
@@ -143,7 +149,13 @@ class SvgaPlugin : FlutterPlugin, MethodCallHandler, FlutterParseCompletion.Data
             return
         }
 
-        modelMap[call.arguments as Long]?.drawer?.pause()
+        modelMap[call.arguments as Long]?.apply {
+            when (continual) {
+                true -> drawer.pause()
+                else -> drawer.stop()
+            }
+        }
+
         result.success(ResultUtil.ok)
     }
 

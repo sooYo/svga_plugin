@@ -16,6 +16,7 @@ class SVGAWidget extends StatefulWidget {
     this.onComplete,
     this.mute = false,
     this.play = true,
+    this.continual = true,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
     this.indicatorRadius = 8.0,
@@ -33,6 +34,7 @@ class SVGAWidget extends StatefulWidget {
     this.onComplete,
     this.mute = false,
     this.play = true,
+    this.continual = true,
     this.loopCount = 0,
     this.fit = BoxFit.contain,
     this.indicatorRadius = 8.0,
@@ -61,7 +63,20 @@ class SVGAWidget extends StatefulWidget {
   /// mute them or not. Otherwise, this property has no effect.
   final bool mute;
 
+  /// Play-pause control
+  ///
+  /// Puase this SVGA animation if needed when condition changed, the internal state
+  /// will call [SvgaPlugin.pause] or [SvgaPlugin.resume] properly according to this
+  /// property.
+  ///
+  /// See alo [continual] for other detail control
   final bool play;
+
+  /// Resume control
+  ///
+  /// Resume from current frame where the animation was paused or restart from
+  /// first frame, if it's `false`, the animation perform a restart when resume
+  final bool continual;
 
   final BoxFit fit;
 
@@ -147,6 +162,7 @@ class _SVGAState extends State<SVGAWidget> {
           remoted: widget._remoted,
           fit: widget.fit,
           mute: widget.mute,
+          continual: widget.continual,
           loopCount: widget.loopCount,
           loadingWidget: loadingWidget,
           errorWidget: errorWidget,
@@ -167,6 +183,7 @@ class _SVGAState extends State<SVGAWidget> {
         remoted: widget._remoted,
         fit: widget.fit,
         mute: widget.mute,
+        continual: widget.continual,
         loopCount: widget.loopCount,
         loadingWidget: loadingWidget,
         errorWidget: errorWidget,
@@ -188,6 +205,7 @@ class _SVGACore extends StatelessWidget {
     this.onComplete,
     this.loopCount = 0,
     this.mute = false,
+    this.continual = true,
     this.fit = BoxFit.contain,
   });
 
@@ -203,6 +221,7 @@ class _SVGACore extends StatelessWidget {
 
   final int loopCount;
   final bool mute;
+  final bool continual;
   final BoxFit fit;
 
   final SVGALoadCompletion? onComplete;
@@ -233,6 +252,7 @@ class _SVGACore extends StatelessWidget {
       mute: mute,
       source: source,
       remoted: remoted,
+      continual: continual,
       loopCount: max(loopCount, 0),
     );
 

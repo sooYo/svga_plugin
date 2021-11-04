@@ -68,6 +68,7 @@ class FlutterParseCompletion(
             .setTextureEntry(textureEntry)
             .setWidgetId(loadInfo.widgetId)
             .setSource(loadInfo.source)
+            .setContinual(loadInfo.continualResume)
             .setMovie(videoItem.movieItem)
             .build()
 

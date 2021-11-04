@@ -41,6 +41,7 @@ class SvgaPlugin {
     int loopCount = 0,
     bool remoted = false,
     bool mute = false,
+    bool continual = true,
     BoxFit fit = BoxFit.contain,
   }) async {
     if (widgetId < 0) {
@@ -53,6 +54,7 @@ class SvgaPlugin {
       ..width = width
       ..height = height
       ..loopCount = loopCount
+      ..continualResume = continual
       ..boxFitToScaleType(fit);
 
     if (remoted) {
