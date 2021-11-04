@@ -20,6 +20,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'scaleType', $pb.PbFieldType.O3, protoName: 'scaleType')
     ..aOB(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'mute')
     ..a<$core.int>(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'loopCount', $pb.PbFieldType.O3, protoName: 'loopCount')
+    ..aOB(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'continualResume', protoName: 'continualResume')
     ..hasRequiredFields = false
   ;
 
@@ -33,6 +34,7 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     $core.int? scaleType,
     $core.bool? mute,
     $core.int? loopCount,
+    $core.bool? continualResume,
   }) {
     final _result = create();
     if (assetUrl != null) {
@@ -58,6 +60,9 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
     }
     if (loopCount != null) {
       _result.loopCount = loopCount;
+    }
+    if (continualResume != null) {
+      _result.continualResume = continualResume;
     }
     return _result;
   }
@@ -153,6 +158,15 @@ class SVGALoadInfo extends $pb.GeneratedMessage {
   $core.bool hasLoopCount() => $_has(7);
   @$pb.TagNumber(8)
   void clearLoopCount() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.bool get continualResume => $_getBF(8);
+  @$pb.TagNumber(9)
+  set continualResume($core.bool v) { $_setBool(8, v); }
+  @$pb.TagNumber(9)
+  $core.bool hasContinualResume() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearContinualResume() => clearField(9);
 }
 
 class ResultInfo extends $pb.GeneratedMessage {

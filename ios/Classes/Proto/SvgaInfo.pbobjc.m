@@ -54,6 +54,7 @@ static GPBFileDescriptor *SvgaInfoRoot_FileDescriptor(void) {
 @dynamic scaleType;
 @dynamic mute;
 @dynamic loopCount;
+@dynamic continualResume;
 
 typedef struct SVGALoadInfo__storage_ {
   uint32_t _has_storage_[1];
@@ -144,6 +145,15 @@ typedef struct SVGALoadInfo__storage_ {
         .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldTextFormatNameCustom | GPBFieldClearHasIvarOnZero),
         .dataType = GPBDataTypeInt32,
       },
+      {
+        .name = "continualResume",
+        .dataTypeSpecific.clazz = Nil,
+        .number = SVGALoadInfo_FieldNumber_ContinualResume,
+        .hasIndex = 9,
+        .offset = 10,  // Stored in _has_storage_ to save space.
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldTextFormatNameCustom | GPBFieldClearHasIvarOnZero),
+        .dataType = GPBDataTypeBool,
+      },
     };
     GPBDescriptor *localDescriptor =
         [GPBDescriptor allocDescriptorForClass:[SVGALoadInfo class]
@@ -155,7 +165,7 @@ typedef struct SVGALoadInfo__storage_ {
                                          flags:(GPBDescriptorInitializationFlags)(GPBDescriptorInitializationFlag_UsesClassRefs | GPBDescriptorInitializationFlag_Proto3OptionalKnown)];
 #if !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     static const char *extraTextFormatInfo =
-        "\005\001\006!!\000\002\007!!\000\005\010\000\006\t\000\010\t\000";
+        "\006\001\006!!\000\002\007!!\000\005\010\000\006\t\000\010\t\000\t\017\000";
     [localDescriptor setupExtraTextInfo:extraTextFormatInfo];
 #endif  // !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     #if defined(DEBUG) && DEBUG

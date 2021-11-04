@@ -55,6 +55,7 @@ typedef GPB_ENUM(SVGALoadInfo_FieldNumber) {
   SVGALoadInfo_FieldNumber_ScaleType = 6,
   SVGALoadInfo_FieldNumber_Mute = 7,
   SVGALoadInfo_FieldNumber_LoopCount = 8,
+  SVGALoadInfo_FieldNumber_ContinualResume = 9,
 };
 
 GPB_FINAL @interface SVGALoadInfo : GPBMessage
@@ -81,6 +82,13 @@ GPB_FINAL @interface SVGALoadInfo : GPBMessage
 @property(nonatomic, readwrite) BOOL mute;
 
 @property(nonatomic, readwrite) int32_t loopCount;
+
+/**
+ * Where resume the animation, from frame where it's paused
+ * or the first frame. If it's `true`, it should continue to
+ * play next frame from where it's paused
+ **/
+@property(nonatomic, readwrite) BOOL continualResume;
 
 @end
 

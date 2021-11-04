@@ -21,6 +21,11 @@ message SVGALoadInfo {
   bool mute = 7;
 
   int32 loopCount = 8;
+
+  // Where resume the animation, from frame where it's paused
+  // or the first frame. If it's `true`, it should continue to
+  // play next frame from where it's paused
+  bool continualResume = 9;
 }
 
 message ResultInfo {
