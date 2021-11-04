@@ -106,8 +106,8 @@ open class SVGAImageView @JvmOverloads constructor(
     private fun createParseCompletion(ref: WeakReference<SVGAImageView>): SVGAParser.ParseCompletion {
         return object : SVGAParser.ParseCompletion {
             override fun onComplete(videoItem: SVGAVideoEntity) {
-                if (videoItem.movie != null) {
-                    SoundPool.instance.loadAudiosFromMovie(videoItem.movie!!, viewId) {
+                if (videoItem.movieItem != null) {
+                    SoundPool.instance.loadAudiosFromMovie(videoItem.movieItem!!, viewId) {
                         ref.get()?.startAnimation(videoItem)
                     }
                 } else {
@@ -147,7 +147,7 @@ open class SVGAImageView @JvmOverloads constructor(
         mEndFrame = (videoItem.frames - 1).coerceAtMost(((range?.location ?: 0) + (range?.length ?: Int.MAX_VALUE) - 1))
         val animator = ValueAnimator.ofInt(mStartFrame, mEndFrame)
         animator.interpolator = LinearInterpolator()
-        animator.duration = ((mEndFrame - mStartFrame + 1) * (1000 / videoItem.fps) / generateScale()).toLong()
+        animator.duration = ((mEndFrame - mStartFrame + 1) * (1000 / videoItem.FPS) / generateScale()).toLong()
         animator.repeatCount = if (loops <= 0) 99999 else loops - 1
         animator.addUpdateListener(mAnimatorUpdateListener)
         animator.addListener(mAnimatorListener)

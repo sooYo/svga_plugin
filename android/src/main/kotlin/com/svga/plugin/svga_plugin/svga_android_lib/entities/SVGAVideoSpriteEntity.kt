@@ -1,6 +1,6 @@
 package com.svga.plugin.svga_plugin.svga_android_lib.entities
 
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.SpriteEntity
 import org.json.JSONObject
 
 /**
@@ -36,11 +36,11 @@ internal class SVGAVideoSpriteEntity {
         frames = mutableFrames.toList()
     }
 
-    constructor(obj: Svga.SpriteEntity) {
+    constructor(obj: SpriteEntity) {
         this.imageKey = obj.imageKey
         this.matteKey = obj.matteKey
         var lastFrame: SVGAVideoSpriteFrameEntity? = null
-        frames = obj.framesList?.map {
+        frames = obj.frames?.map {
             val frameItem = SVGAVideoSpriteFrameEntity(it)
             if (frameItem.shapes.isNotEmpty()) {
                 frameItem.shapes.first().let {

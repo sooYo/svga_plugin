@@ -1,7 +1,7 @@
 package com.svga.plugin.svga_plugin.svga_android_lib.entities
 
 import android.graphics.Matrix
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.FrameEntity
 import com.svga.plugin.svga_plugin.svga_android_lib.utils.SVGARect
 
 import org.json.JSONObject
@@ -27,7 +27,6 @@ class SVGAVideoSpriteFrameEntity {
                 it.optDouble("height", 0.0)
             )
         }
-
         obj.optJSONObject("transform")?.let {
             val arr = FloatArray(9)
             val a = it.optDouble("a", 1.0)
@@ -47,41 +46,39 @@ class SVGAVideoSpriteFrameEntity {
             arr[8] = 1.0.toFloat()
             transform.setValues(arr)
         }
-
         obj.optString("clipPath")?.let { d ->
             if (d.isNotEmpty()) {
                 maskPath = SVGAPathEntity(d)
             }
         }
-
-        obj.optJSONArray("shapes")?.let { it ->
+        obj.optJSONArray("shapes")?.let {
             val mutableList: MutableList<SVGAVideoShapeEntity> = mutableListOf()
             for (i in 0 until it.length()) {
                 it.optJSONObject(i)?.let {
                     mutableList.add(SVGAVideoShapeEntity(it))
                 }
             }
-
             shapes = mutableList.toList()
         }
     }
 
-    constructor(obj: Svga.FrameEntity) {
-        this.alpha = obj.alpha.toDouble()
+    constructor(obj: FrameEntity) {
+        this.alpha = (obj.alpha ?: 0.0f).toDouble()
         obj.layout?.let {
             this.layout = SVGARect(
-                it.x.toDouble(), it.y.toDouble(), it.width.toDouble(), it.height.toDouble()
+                (it.x ?: 0.0f).toDouble(), (it.y
+                    ?: 0.0f).toDouble(), (it.width ?: 0.0f).toDouble(), (it.height
+                    ?: 0.0f).toDouble()
             )
         }
-
         obj.transform?.let {
             val arr = FloatArray(9)
-            val a = it.a
-            val b = it.b
-            val c = it.c
-            val d = it.d
-            val tx = it.tx
-            val ty = it.ty
+            val a = it.a ?: 1.0f
+            val b = it.b ?: 0.0f
+            val c = it.c ?: 0.0f
+            val d = it.d ?: 1.0f
+            val tx = it.tx ?: 0.0f
+            val ty = it.ty ?: 0.0f
             arr[0] = a
             arr[1] = c
             arr[2] = tx
@@ -93,13 +90,12 @@ class SVGAVideoSpriteFrameEntity {
             arr[8] = 1.0f
             transform.setValues(arr)
         }
-
         obj.clipPath?.takeIf { it.isNotEmpty() }?.let {
             maskPath = SVGAPathEntity(it)
         }
-
-        this.shapes = obj.shapesList.map {
+        this.shapes = obj.shapes.map {
             return@map SVGAVideoShapeEntity(it)
         }
     }
+
 }

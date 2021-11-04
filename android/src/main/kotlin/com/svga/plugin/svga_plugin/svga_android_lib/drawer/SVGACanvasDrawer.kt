@@ -418,7 +418,6 @@ open class SVGACanvasDrawer(
                     }
                 }
             }
-
         }
     }
 
@@ -553,7 +552,5 @@ open class SVGACanvasDrawer(
             }
             return this.cache[shape]!!
         }
-
     }
-
 }

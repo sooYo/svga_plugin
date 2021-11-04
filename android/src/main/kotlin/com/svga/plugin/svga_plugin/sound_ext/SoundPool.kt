@@ -5,11 +5,10 @@ import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
-import android.util.Log
 import android.util.LongSparseArray
 import com.svga.plugin.svga_plugin.sound_ext.contants.LoadCompletion
 import com.svga.plugin.svga_plugin.sound_ext.models.MovieSoundModel
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.MovieEntity
 import java.io.FileInputStream
 
 class SoundPool private constructor(maxStream: Int = 20) {
@@ -59,7 +58,7 @@ class SoundPool private constructor(maxStream: Int = 20) {
     }
 
     // region Core
-    fun loadAudiosFromMovie(movie: Svga.MovieEntity, movieId: Long, completion: LoadCompletion) {
+    fun loadAudiosFromMovie(movie: MovieEntity, movieId: Long, completion: LoadCompletion) {
         val model = generateSoundModelForMovie(movie, movieId, completion)
         if (model == null || model.audiosList.isEmpty()) {
             completion()
@@ -117,6 +116,8 @@ class SoundPool private constructor(maxStream: Int = 20) {
             it.clear()
             it.isPlaying = false
         }
+
+        _models.remove(movieId)
     }
 
     fun playMovie(movieId: Long, play: Boolean) {
@@ -135,9 +136,12 @@ class SoundPool private constructor(maxStream: Int = 20) {
                 return@forEach
             }
 
-            if (audio.entity.startFrame >= frame && audio.streamId == null) {
+            val startFrame = audio.entity.startFrame ?: 0
+            val endFrame = audio.entity.endFrame ?: 0
+
+            if (startFrame >= frame && audio.streamId == null) {
                 audio.streamId = _pool?.play(audio.soundId!!, 1f, 1f, 1, 0, 1f)
-            } else if (audio.entity.endFrame <= frame && audio.streamId != null) {
+            } else if (endFrame <= frame && audio.streamId != null) {
                 _pool?.stop(audio.streamId!!)
                 audio.streamId = null
             }
@@ -147,15 +151,15 @@ class SoundPool private constructor(maxStream: Int = 20) {
 
     // region SoundModel Generate
     private fun generateSoundModelForMovie(
-        movie: Svga.MovieEntity,
+        movie: MovieEntity,
         movieId: Long,
         completion: LoadCompletion
     ): MovieSoundModel? {
-        if (movie.audiosCount == 0) {
+        if (movie.audios.count() == 0) {
             return null
         }
 
-        val audios = movie.audiosList.filter {
+        val audios = movie.audios.filter {
             it.audioKey.isNotEmpty() && it.totalTime != 0
         }
 
@@ -172,7 +176,7 @@ class SoundPool private constructor(maxStream: Int = 20) {
         audios.forEach { audio ->
             _cache.generateAudioFile(
                 audio,
-                movie.imagesMap[audio.audioKey]?.toByteArray()
+                movie.images[audio.audioKey]?.toByteArray()
             )?.let {
                 audioModel.addAudio(MovieSoundModel.SoundModel(audio, it))
             }
@@ -183,8 +187,13 @@ class SoundPool private constructor(maxStream: Int = 20) {
 
     private fun setModelsIntoSoundPool(model: MovieSoundModel, movieId: Long) {
         model.audiosList.forEach { audio ->
-            val startTime = audio.entity.startTime.toDouble()
-            val totalTime = audio.entity.totalTime.toDouble()
+            val startTime = (audio.entity.startTime ?: 0).toDouble()
+            val totalTime = (audio.entity.totalTime ?: 0).toDouble()
+
+            if (totalTime.toInt() == 0) {
+                // 除数不能为 0
+                return@forEach
+            }
 
             audio.soundId = FileInputStream(audio.cacheFile).let {
                 val length = it.available().toDouble()

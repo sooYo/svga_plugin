@@ -4,8 +4,7 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Path
 import android.graphics.RectF
-import android.util.Log
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga.ShapeEntity
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.ShapeEntity
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
@@ -19,10 +18,10 @@ val sharedPath = Path()
 class SVGAVideoShapeEntity {
 
     enum class Type {
-        Shape,
-        Rect,
-        Ellipse,
-        Keep
+        shape,
+        rect,
+        ellipse,
+        keep
     }
 
     class Styles {
@@ -50,7 +49,7 @@ class SVGAVideoShapeEntity {
 
     }
 
-    var type = Type.Shape
+    var type = Type.shape
         private set
 
     var args: Map<String, Any>? = null
@@ -77,17 +76,17 @@ class SVGAVideoShapeEntity {
     }
 
     val isKeep: Boolean
-        get() = type == Type.Keep
+        get() = type == Type.keep
 
     var shapePath: Path? = null
 
     private fun parseType(obj: JSONObject) {
-        obj.optString("type").let {
+        obj.optString("type")?.let {
             when {
-                it.equals("shape", ignoreCase = true) -> type = Type.Shape
-                it.equals("rect", ignoreCase = true) -> type = Type.Rect
-                it.equals("ellipse", ignoreCase = true) -> type = Type.Ellipse
-                it.equals("keep", ignoreCase = true) -> type = Type.Keep
+                it.equals("shape", ignoreCase = true) -> type = Type.shape
+                it.equals("rect", ignoreCase = true) -> type = Type.rect
+                it.equals("ellipse", ignoreCase = true) -> type = Type.ellipse
+                it.equals("keep", ignoreCase = true) -> type = Type.keep
             }
         }
     }
@@ -95,11 +94,10 @@ class SVGAVideoShapeEntity {
     private fun parseType(obj: ShapeEntity) {
         obj.type?.let {
             type = when (it) {
-                ShapeEntity.ShapeType.SHAPE -> Type.Shape
-                ShapeEntity.ShapeType.RECT -> Type.Rect
-                ShapeEntity.ShapeType.ELLIPSE -> Type.Ellipse
-                ShapeEntity.ShapeType.KEEP -> Type.Keep
-                else -> Type.Rect
+                ShapeEntity.ShapeType.SHAPE -> Type.shape
+                ShapeEntity.ShapeType.RECT -> Type.rect
+                ShapeEntity.ShapeType.ELLIPSE -> Type.ellipse
+                ShapeEntity.ShapeType.KEEP -> Type.keep
             }
         }
     }
@@ -108,7 +106,7 @@ class SVGAVideoShapeEntity {
         val args = HashMap<String, Any>()
         obj.optJSONObject("args")?.let { values ->
             values.keys().forEach { key ->
-                values.get(key).let {
+                values.get(key)?.let {
                     args.put(key, it)
                 }
             }
@@ -118,21 +116,21 @@ class SVGAVideoShapeEntity {
 
     private fun parseArgs(obj: ShapeEntity) {
         val args = HashMap<String, Any>()
-        obj.shape?.let { it ->
+        obj.shape?.let {
             it.d?.let { args.put("d", it) }
         }
         obj.ellipse?.let {
-            args["x"] = it.x
-            args["y"] = it.y
-            args["radiusX"] = it.radiusX
-            args.put("radiusY", it.radiusY)
+            args.put("x", it.x ?: 0.0f)
+            args.put("y", it.y ?: 0.0f)
+            args.put("radiusX", it.radiusX ?: 0.0f)
+            args.put("radiusY", it.radiusY ?: 0.0f)
         }
         obj.rect?.let {
-            args["x"] = it.x
-            args["y"] = it.y
-            args["width"] = it.width
-            args["height"] = it.height
-            args.put("cornerRadius", it.cornerRadius)
+            args.put("x", it.x ?: 0.0f)
+            args.put("y", it.y ?: 0.0f)
+            args.put("width", it.width ?: 0.0f)
+            args.put("height", it.height ?: 0.0f)
+            args.put("cornerRadius", it.cornerRadius ?: 0.0f)
         }
         this.args = args
     }
@@ -160,7 +158,7 @@ class SVGAVideoShapeEntity {
     }
 
     private fun parseStyles(obj: JSONObject) {
-        obj.optJSONObject("styles")?.let { it ->
+        obj.optJSONObject("styles")?.let {
             val styles = Styles()
             it.optJSONArray("fill")?.let {
                 if (it.length() == 4) {
@@ -174,7 +172,6 @@ class SVGAVideoShapeEntity {
                     )
                 }
             }
-
             it.optJSONArray("stroke")?.let {
                 if (it.length() == 4) {
                     val mulValue = checkValueRange(it)
@@ -187,7 +184,6 @@ class SVGAVideoShapeEntity {
                     )
                 }
             }
-
             styles.strokeWidth = it.optDouble("strokeWidth", 0.0).toFloat()
             styles.lineCap = it.optString("lineCap", "butt")
             styles.lineJoin = it.optString("lineJoin", "miter")
@@ -198,7 +194,6 @@ class SVGAVideoShapeEntity {
                     styles.lineDash[i] = it.optDouble(i, 0.0).toFloat()
                 }
             }
-
             this.styles = styles
         }
     }
@@ -206,9 +201,9 @@ class SVGAVideoShapeEntity {
     // 检查色域范围是否是 [0f, 1f]，或者是 [0f, 255f]
     private fun checkValueRange(color: ShapeEntity.ShapeStyle.RGBAColor): Float {
         return if (
-            color.r <= 1 &&
-            color.g <= 1 &&
-            color.b <= 1
+            (color.r ?: 0f) <= 1 &&
+            (color.g ?: 0f) <= 1 &&
+            (color.b ?: 0f) <= 1
         ) {
             255f
         } else {
@@ -226,57 +221,49 @@ class SVGAVideoShapeEntity {
     }
 
     private fun parseStyles(obj: ShapeEntity) {
-        obj.styles?.let { it ->
+        obj.styles?.let {
             val styles = Styles()
-
             it.fill?.let {
                 val mulValue = checkValueRange(it)
                 val alphaRangeValue = checkAlphaValueRange(it)
                 styles.fill = Color.argb(
-                    (it.a * alphaRangeValue).toInt(),
-                    (it.r * mulValue).toInt(),
-                    (it.g * mulValue).toInt(),
-                    (it.b * mulValue).toInt()
+                    ((it.a ?: 0f) * alphaRangeValue).toInt(),
+                    ((it.r ?: 0f) * mulValue).toInt(),
+                    ((it.g ?: 0f) * mulValue).toInt(),
+                    ((it.b ?: 0f) * mulValue).toInt()
                 )
             }
-
             it.stroke?.let {
                 val mulValue = checkValueRange(it)
                 val alphaRangeValue = checkAlphaValueRange(it)
                 styles.stroke = Color.argb(
-                    (it.a * alphaRangeValue).toInt(),
-                    (it.r * mulValue).toInt(),
-                    (it.g * mulValue).toInt(),
-                    (it.b * mulValue).toInt()
+                    ((it.a ?: 0f) * alphaRangeValue).toInt(),
+                    ((it.r ?: 0f) * mulValue).toInt(),
+                    ((it.g ?: 0f) * mulValue).toInt(),
+                    ((it.b ?: 0f) * mulValue).toInt()
                 )
-            }
 
-            styles.strokeWidth = it.strokeWidth
+            }
+            styles.strokeWidth = it.strokeWidth ?: 0.0f
             it.lineCap?.let {
                 when (it) {
                     ShapeEntity.ShapeStyle.LineCap.LineCap_BUTT -> styles.lineCap = "butt"
                     ShapeEntity.ShapeStyle.LineCap.LineCap_ROUND -> styles.lineCap = "round"
                     ShapeEntity.ShapeStyle.LineCap.LineCap_SQUARE -> styles.lineCap = "square"
-                    else -> styles.lineCap = "butt"
                 }
             }
-
             it.lineJoin?.let {
                 when (it) {
                     ShapeEntity.ShapeStyle.LineJoin.LineJoin_BEVEL -> styles.lineJoin = "bevel"
                     ShapeEntity.ShapeStyle.LineJoin.LineJoin_MITER -> styles.lineJoin = "miter"
                     ShapeEntity.ShapeStyle.LineJoin.LineJoin_ROUND -> styles.lineJoin = "round"
-                    else -> styles.lineJoin = "bevel"
                 }
-
             }
-
-            styles.miterLimit = it.miterLimit.toInt()
-            styles.lineDash = FloatArray(3)
-
-            it.lineDashI.let { styles.lineDash[0] = it }
-            it.lineDashII.let { styles.lineDash[1] = it }
-            it.lineDashIII.let { styles.lineDash[2] = it }
+            styles.miterLimit = (it.miterLimit ?: 0.0f).toInt()
+            styles.lineDash = kotlin.FloatArray(3)
+            it.lineDashI?.let { styles.lineDash[0] = it }
+            it.lineDashII?.let { styles.lineDash[1] = it }
+            it.lineDashIII?.let { styles.lineDash[2] = it }
             this.styles = styles
         }
     }
@@ -309,12 +296,12 @@ class SVGAVideoShapeEntity {
         obj.transform?.let {
             val transform = Matrix()
             val arr = FloatArray(9)
-            val a = it.a
-            val b = it.b
-            val c = it.c
-            val d = it.d
-            val tx = it.tx
-            val ty = it.ty
+            val a = it.a ?: 1.0f
+            val b = it.b ?: 0.0f
+            val c = it.c ?: 0.0f
+            val d = it.d ?: 1.0f
+            val tx = it.tx ?: 0.0f
+            val ty = it.ty ?: 0.0f
             arr[0] = a
             arr[1] = c
             arr[2] = tx
@@ -333,49 +320,37 @@ class SVGAVideoShapeEntity {
         if (this.shapePath != null) {
             return
         }
-
         sharedPath.reset()
-
-        when (this.type) {
-            Type.Shape -> {
-                (this.args?.get("d") as? String)?.let {
-                    SVGAPathEntity(it).buildPath(sharedPath)
-                }
+        if (this.type == Type.shape) {
+            (this.args?.get("d") as? String)?.let {
+                SVGAPathEntity(it).buildPath(sharedPath)
             }
-            Type.Ellipse -> {
-                val xv = this.args?.get("x") as? Number ?: return
-                val yv = this.args?.get("y") as? Number ?: return
-                val rxv = this.args?.get("radiusX") as? Number ?: return
-                val ryv = this.args?.get("radiusY") as? Number ?: return
-                val x = xv.toFloat()
-                val y = yv.toFloat()
-                val rx = rxv.toFloat()
-                val ry = ryv.toFloat()
-                sharedPath.addOval(RectF(x - rx, y - ry, x + rx, y + ry), Path.Direction.CW)
-            }
-            Type.Rect -> {
-                val xv = this.args?.get("x") as? Number ?: return
-                val yv = this.args?.get("y") as? Number ?: return
-                val wv = this.args?.get("width") as? Number ?: return
-                val hv = this.args?.get("height") as? Number ?: return
-                val crv = this.args?.get("cornerRadius") as? Number ?: return
-                val x = xv.toFloat()
-                val y = yv.toFloat()
-                val width = wv.toFloat()
-                val height = hv.toFloat()
-                val cornerRadius = crv.toFloat()
-                sharedPath.addRoundRect(
-                    RectF(x, y, x + width, y + height),
-                    cornerRadius,
-                    cornerRadius,
-                    Path.Direction.CW
-                )
-            }
-            else -> Log.d("TAG", "buildPath: $type")
+        } else if (this.type == Type.ellipse) {
+            val xv = this.args?.get("x") as? Number ?: return
+            val yv = this.args?.get("y") as? Number ?: return
+            val rxv = this.args?.get("radiusX") as? Number ?: return
+            val ryv = this.args?.get("radiusY") as? Number ?: return
+            val x = xv.toFloat()
+            val y = yv.toFloat()
+            val rx = rxv.toFloat()
+            val ry = ryv.toFloat()
+            sharedPath.addOval(RectF(x - rx, y - ry, x + rx, y + ry), Path.Direction.CW)
+        } else if (this.type == Type.rect) {
+            val xv = this.args?.get("x") as? Number ?: return
+            val yv = this.args?.get("y") as? Number ?: return
+            val wv = this.args?.get("width") as? Number ?: return
+            val hv = this.args?.get("height") as? Number ?: return
+            val crv = this.args?.get("cornerRadius") as? Number ?: return
+            val x = xv.toFloat()
+            val y = yv.toFloat()
+            val width = wv.toFloat()
+            val height = hv.toFloat()
+            val cornerRadius = crv.toFloat()
+            sharedPath.addRoundRect(RectF(x, y, x + width, y + height), cornerRadius, cornerRadius, Path.Direction.CW)
         }
 
         this.shapePath = Path()
         this.shapePath?.set(sharedPath)
     }
-
 }
+

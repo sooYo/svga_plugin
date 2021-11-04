@@ -59,5 +59,4 @@ open class SGVADrawer(val videoItem: SVGAVideoEntity) {
             scaleType
         )
     }
-
 }

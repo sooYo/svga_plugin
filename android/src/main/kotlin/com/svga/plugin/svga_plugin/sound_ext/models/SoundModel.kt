@@ -1,7 +1,7 @@
 package com.svga.plugin.svga_plugin.sound_ext.models
 
 import com.svga.plugin.svga_plugin.sound_ext.contants.LoadCompletion
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.AudioEntity
 import java.io.File
 
 /**
@@ -19,7 +19,7 @@ class MovieSoundModel(
     /**
      * Represents a single audio
      */
-    class SoundModel(val entity: Svga.AudioEntity, val cacheFile: File?) {
+    class SoundModel(val entity: AudioEntity, val cacheFile: File?) {
         var soundId: Int? = null
         var streamId: Int? = null
     }

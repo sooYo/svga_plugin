@@ -2,7 +2,8 @@ package com.svga.plugin.svga_plugin.sound_ext
 
 import android.content.Context
 import android.util.Log
-import com.svga.plugin.svga_plugin.svga_android_lib.proto.Svga
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.AudioEntity
+import com.svga.plugin.svga_plugin.svga_android_lib.proto.MovieEntity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -24,18 +25,18 @@ class SoundCache(context: Context) {
      * Parse the movie entity and cache all audio data into disk
      */
     @Suppress("Unused")
-    fun generateAudioFiles(movie: Svga.MovieEntity?): Map<String, File> {
+    fun generateAudioFiles(movie: MovieEntity?): Map<String, File> {
         val result = mutableMapOf<String, File>()
-        if (movie == null || movie.imagesCount == 0) {
+        if (movie == null || movie.images.count() == 0) {
             return result
         }
 
-        movie.audiosList.forEach { audio ->
+        movie.audios.forEach { audio ->
             if (audio.audioKey.isEmpty() || audio.totalTime == 0) {
                 return@forEach
             }
 
-            val audioData = movie.imagesMap[audio.audioKey]?.toByteArray()
+            val audioData = movie.images[audio.audioKey]?.toByteArray()
             if (audioData == null || audioData.isEmpty()) {
                 return@forEach
             }
@@ -57,7 +58,7 @@ class SoundCache(context: Context) {
      * exception raised during the process
      */
     @Suppress("Unused")
-    fun generateAudioFile(audio: Svga.AudioEntity?, buffer: ByteArray?): File? {
+    fun generateAudioFile(audio: AudioEntity?, buffer: ByteArray?): File? {
         if (audio?.audioKey?.isEmpty() == true || !isAudioBuffer(buffer)) {
             return null
         }
